@@ -25,19 +25,79 @@
     >
 
     <!-- =====================================================
-         LEAFLET
-         ===================================================== -->
+     GOOGLE MAPS
+     ===================================================== -->
 
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    >
+    <script>
+        (g => {
+            var h,
+                a,
+                k,
+                p = "The Google Maps JavaScript API",
+                c = "google",
+                l = "importLibrary",
+                q = "__ib__",
+                m = document,
+                b = window;
 
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+            b = b[c] || (b[c] = {});
+            var d = b.maps || (b.maps = {}),
+                r = new Set(),
+                e = new URLSearchParams(),
+                u = () =>
+                    h ||
+                    (h = new Promise(async (f, n) => {
+                        await (a = m.createElement("script"));
+                        e.set("libraries", [...r] + "");
+
+                        for (k in g)
+                            e.set(
+                                k.replace(
+                                    /[A-Z]/g,
+                                    t => "_" + t[0].toLowerCase()
+                                ),
+                                g[k]
+                            );
+
+                        e.set("callback", c + ".maps." + q);
+
+                        a.src =
+                            `https://maps.googleapis.com/maps/api/js?` +
+                            e;
+
+                        d[q] = f;
+
+                        a.onerror = () =>
+                            n(
+                                Error(
+                                    p +
+                                    " could not load."
+                                )
+                            );
+
+                        a.nonce =
+                            m.querySelector(
+                                "script[nonce]"
+                            )?.nonce || "";
+
+                        m.head.append(a);
+                    }));
+
+            d[l]
+                ? console.warn(
+                    p + " only loads once. Ignoring:",
+                    g
+                )
+                : d[l] = (f, ...n) =>
+                    r.add(f) &&
+                    u().then(() =>
+                        d[l](f, ...n)
+                    );
+        })({
+            key: "AIzaSyAqDhpS18UBzPk4SY05hxU7JxCwHvd6HIo",
+            v: "weekly"
+        });
     </script>
-
-    <script src="https://unpkg.com/@mapbox/polyline@1.2.1/src/polyline.js"></script>
 
 </head>
 
@@ -293,7 +353,7 @@
                         <button
                             type="button"
                             class="boton boton-principal"
-                            onclick="calcularRutaDesdeDireccion()"
+                            onclick="calcularRuta()"
                         >
                             <i class="fa-solid fa-route"></i>
                             Calcular ruta
