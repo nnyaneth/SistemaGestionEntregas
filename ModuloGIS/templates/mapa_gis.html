@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Módulo GIS - Sistema de Gestión de Entregas</title>
+
+
+    <!-- =====================================================
+         CSS DEL MÓDULO GIS
+         ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/gis.css') }}"
+    >
+
+
+    <!-- =====================================================
+         ICONOS
+         ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+
+    <!-- =====================================================
+         GOOGLE MAPS JAVASCRIPT API
+         ===================================================== -->
+
+    <script>
+        (g => {
+            var h,
+                a,
+                k,
+                p = "The Google Maps JavaScript API",
+                c = "google",
+                l = "importLibrary",
+                q = "__ib__",
+                m = document,
+                b = window;
+
+            b = b[c] || (b[c] = {});
+            var d = b.maps || (b.maps = {}),
+                r = new Set(),
+                e = new URLSearchParams(),
+                u = () =>
+                    h ||
+                    (h = new Promise(async (f, n) => {
+
+                        await (a = m.createElement("script"));
+
+                        e.set(
+                            "libraries",
+                            [...r] + ""
+                        );
+
+                        for (k in g) {
+
+                            e.set(
+                                k.replace(
+                                    /[A-Z]/g,
+                                    t => "_" + t[0].toLowerCase()
+                                ),
+                                g[k]
+                            );
+
+                        }
+
+                        e.set(
+                            "callback",
+                            c + ".maps." + q
+                        );
+
+                        a.src =
+                            `https://maps.googleapis.com/maps/api/js?` +
+                            e;
+
+                        d[q] = f;
+
+                        a.onerror = () =>
+                            n(
+                                Error(
+                                    p +
+                                    " could not load."
+                                )
+                            );
+
+                        a.nonce =
+                            m.querySelector(
+                                "script[nonce]"
+                            )?.nonce || "";
+
+                        m.head.append(a);
+
+                    }));
+
+            d[l]
+                ? console.warn(
+                    p + " only loads once. Ignoring:",
+                    g
+                )
+                : d[l] = (f, ...n) =>
+                    r.add(f) &&
+                    u().then(() =>
+                        d[l](f, ...n)
+                    );
+
+        })({
+            key: "{{ google_maps_api_key }}",
+            v: "weekly"
+        });
+    </script>
+
+</head>
+
+
+<body class="gis-body">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+         ===================================================== -->
+
+    <header class="gis-header">
+
+        <div class="gis-identidad">
+
+            <div class="gis-icono">
+
+                <i class="fa-solid fa-map-location-dot"></i>
+
+            </div>
+
+            <div>
+
+                <span class="gis-seccion">
+                    SISTEMA DE INFORMACIÓN GEOGRÁFICA
+                </span>
+
+                <h1>
+                    Módulo GIS
+                </h1>
+
+            </div>
+
+        </div>
+
+
+        <div class="gis-status">
+
+            <span class="status-dot"></span>
+
+            Sistema GIS operativo
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+         ===================================================== -->
+
+    <main class="gis-container">
+
+
+        <!-- =================================================
+             INTRODUCCIÓN
+             ================================================= -->
+
+        <section class="gis-intro">
+
+            <div>
+
+                <span class="intro-label">
+                    GESTIÓN DE RUTAS
+                </span>
+
+                <h2>
+                    Visualización de rutas de entrega
+                </h2>
+
+                <p>
+                    Ingresa una dirección de destino para obtener
+                    automáticamente sus coordenadas geográficas,
+                    calcular la ruta desde el punto de origen y
+                    visualizar el recorrido sobre Google Maps.
+                </p>
+
+            </div>
+
+
+            <div class="intro-icono">
+
+                <i class="fa-solid fa-route"></i>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PANEL PRINCIPAL
+             ================================================= -->
+
+        <section class="gis-panel">
+
+
+            <!-- =================================================
+                 COLUMNA IZQUIERDA
+                 ================================================= -->
+
+            <div class="gis-formulario">
+
+
+                <div class="gis-panel-header">
+
+                    <span>
+                        CONFIGURACIÓN DE RUTA
+                    </span>
+
+                    <h3>
+                        Calcular recorrido
+                    </h3>
+
+                </div>
+
+
+                <!-- =================================================
+                     ORIGEN
+                     ================================================= -->
+
+                <div class="gis-origen">
+
+                    <div class="gis-dato-icono">
+
+                        <i class="fa-solid fa-house"></i>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            PUNTO DE ORIGEN
+                        </span>
+
+                        <strong>
+                            Jr. Hilario Cabrera 201,
+                            Cerro de Pasco 19001
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     DESTINO
+                     ================================================= -->
+
+                <div class="campo">
+
+                    <label for="direccion_destino">
+                        Dirección de destino
+                    </label>
+
+
+                    <div class="input-contenedor">
+
+                        <i class="fa-solid fa-location-dot"></i>
+
+                        <input
+                            type="text"
+                            id="direccion_destino"
+                            placeholder="Ej. Plaza Daniel Alcides Carrión, Cerro de Pasco"
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     BOTONES
+                     ================================================= -->
+
+                <div class="gis-botones">
+
+                    <button
+                        type="button"
+                        class="boton boton-principal"
+                        onclick="calcularRuta()"
+                    >
+
+                        <i class="fa-solid fa-route"></i>
+
+                        Calcular ruta
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="boton boton-secundario"
+                        onclick="limpiarMapa()"
+                    >
+
+                        <i class="fa-solid fa-eraser"></i>
+
+                        Limpiar
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     INFORMACIÓN DE LA RUTA
+                     ================================================= -->
+
+                <div class="ruta-informacion">
+
+
+                    <div class="ruta-dato">
+
+                        <span>
+
+                            <i class="fa-solid fa-road"></i>
+
+                            Distancia
+
+                        </span>
+
+                        <strong id="distanciaMostrada">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="ruta-dato">
+
+                        <span>
+
+                            <i class="fa-solid fa-clock"></i>
+
+                            Duración
+
+                        </span>
+
+                        <strong id="duracionMostrada">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     COORDENADAS
+                     ================================================= -->
+
+                <div class="coordenadas">
+
+
+                    <div>
+
+                        <span>
+                            LATITUD
+                        </span>
+
+                        <strong id="latitudMostrada">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            LONGITUD
+                        </span>
+
+                        <strong id="longitudMostrada">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     CAMPOS OCULTOS
+                     ================================================= -->
+
+                <input
+                    type="hidden"
+                    id="latitud_destino"
+                >
+
+
+                <input
+                    type="hidden"
+                    id="longitud_destino"
+                >
+
+
+                <input
+                    type="hidden"
+                    id="distancia_km"
+                >
+
+
+                <input
+                    type="hidden"
+                    id="duracion_min"
+                >
+
+
+
+                <!-- =================================================
+                     ESTADO
+                     ================================================= -->
+
+                <div
+                    id="estadoRuta"
+                    class="estado-ruta"
+                >
+
+                    <i class="fa-solid fa-location-dot"></i>
+
+                    Ingrese una dirección para calcular la ruta.
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 COLUMNA DERECHA
+                 MAPA
+                 ================================================= -->
+
+            <div class="gis-mapa">
+
+
+                <div class="mapa-header">
+
+                    <div>
+
+                        <span>
+                            GOOGLE MAPS
+                        </span>
+
+                        <h3>
+                            Mapa de ruta
+                        </h3>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-map"></i>
+
+                </div>
+
+
+                <!-- =================================================
+                     CONTENEDOR DEL MAPA
+                     ================================================= -->
+
+                <div
+                    id="mapaEntrega"
+                    class="mapa-entrega"
+                >
+                </div>
+
+
+                <!-- =================================================
+                     REFERENCIA DEL ORIGEN
+                     ================================================= -->
+
+                <div class="mapa-origen">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    <div>
+
+                        <span>
+                            ORIGEN
+                        </span>
+
+                        <strong>
+                            Jr. Hilario Cabrera 201,
+                            Cerro de Pasco 19001
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         PIE DE PÁGINA
+         ===================================================== -->
+
+    <footer class="gis-footer">
+
+        <span>
+            Sistema de Gestión de Entregas
+        </span>
+
+        <span>
+            Módulo GIS
+        </span>
+
+    </footer>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT DEL MÓDULO GIS
+         ===================================================== -->
+
+    <script
+        src="{{ url_for('static', filename='js/gis.js') }}"
+    ></script>
+
+
+</body>
+
+</html>
