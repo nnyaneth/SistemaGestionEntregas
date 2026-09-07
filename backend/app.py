@@ -1,15 +1,19 @@
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from flask import Flask, jsonify, request, render_template
 from datetime import datetime
 from sqlalchemy import text
 from urllib.parse import quote_plus
-import requests
 
 from extensions import db
 from models import Cliente, Producto, Pedido, DetallePedido, Repartidor, Entrega
 from rutas import calcular_ruta
 
-
-import os
+import requests
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -25,9 +29,10 @@ app = Flask(
 
 conexion_sql = (
     "DRIVER={ODBC Driver 17 for SQL Server};"
-    "SERVER=DESKTOP-3QINOC3\\SQLEXPRESS2024;"
-    "DATABASE=SistemaGestionEntregas;"
-    "Trusted_Connection=yes;"
+    "SERVER=sql8020.site4now.net;"
+    "DATABASE=db_ace096_sistemagestionentr;"
+    "UID=db_ace096_sistemagestionentr_admin;"
+    "PWD=Jasper@2017;"
 )
 
 app.config["SQLALCHEMY_DATABASE_URI"] = (
@@ -1075,76 +1080,516 @@ def calcular_ruta_api():
         }), 500
         
         
-# ==========================================
-# GEOCODIFICAR DIRECCIÓN CON NOMINATIM
-# ==========================================
+
 
 @app.route("/geocodificar", methods=["POST"])
-def geocodificar():
+def geocodificar_direccion():
 
     try:
 
+        # ==========================================
+        # RECIBIR DIRECCIÓN
+        # ==========================================
+
         datos = request.get_json()
 
-        direccion = datos.get("direccion")
+        direccion = datos.get(
+            "direccion",
+            ""
+        ).strip()
 
         if not direccion:
             return jsonify({
-                "error": "Debe ingresar una dirección"
+                "error": "La dirección es obligatoria."
             }), 400
 
-        url = "https://nominatim.openstreetmap.org/search"
+
+        # ==========================================
+        # API KEY
+        # ==========================================
+
+        api_key = os.getenv("ORS_API_KEY")
+
+        if not api_key:
+            return jsonify({
+                "error":
+                    "No se encontró ORS_API_KEY "
+                    "en las variables de entorno."
+            }), 500
+
+
+        # ==========================================
+        # NORMALIZAR TEXTO
+        # ==========================================
+
+        direccion_original = direccion
+
+        direccion_busqueda = (
+            direccion
+            .replace("  ", " ")
+            .strip()
+        )
+
+        direccion_minuscula = (
+            direccion_busqueda
+            .lower()
+            .replace(",", " ")
+        )
+
+
+        # ==========================================
+        # LUGAR ESPECÍFICO:
+        # PLAZA DANIEL ALCIDES CARRIÓN
+        # ==========================================
+
+        palabras_plaza = [
+            "plaza daniel alcides carrion",
+            "plaza daniel alcides carrrion",
+            "plaza daniel a carrion",
+            "plaza daniel a. carrion",
+            "plaza d. alcides carrion"
+        ]
+
+        es_plaza_daniel = any(
+            palabra in direccion_minuscula
+            for palabra in palabras_plaza
+        )
+
+
+        if es_plaza_daniel:
+
+            # Coordenadas verificadas de la plaza
+            latitud = -10.68363
+            longitud = -76.25615
+
+            print(
+                "=========================================="
+            )
+            print(
+                "DESTINO ESPECIAL DETECTADO"
+            )
+            print(
+                "Plaza Daniel Alcides Carrión"
+            )
+            print(
+                "Latitud:",
+                latitud
+            )
+            print(
+                "Longitud:",
+                longitud
+            )
+            print(
+                "=========================================="
+            )
+
+            return jsonify({
+                "latitud": latitud,
+                "longitud": longitud,
+                "direccion":
+                    "Plaza Daniel Alcides Carrión, "
+                    "Cerro de Pasco, Pasco, Perú"
+            })
+
+
+        # ==========================================
+        # PREPARAR BÚSQUEDA
+        # ==========================================
+
+        # Si el usuario no escribió Cerro de Pasco,
+        # lo agregamos para evitar resultados
+        # de otras ciudades.
+
+        if (
+            "cerro de pasco"
+            not in direccion_minuscula
+        ):
+
+            direccion_busqueda = (
+                direccion_busqueda
+                + ", Cerro de Pasco, Pasco, Peru"
+            )
+
+        else:
+
+            # Nos aseguramos de incluir Perú
+            if "peru" not in direccion_minuscula:
+                direccion_busqueda = (
+                    direccion_busqueda
+                    + ", Peru"
+                )
+
+
+        # ==========================================
+        # OPENROUTESERVICE / PELIAS
+        # ==========================================
+
+        url = (
+            "https://api.heigit.org/"
+            "pelias/v1/search"
+        )
+
 
         parametros = {
-            "q": direccion,
-            "format": "json",
-            "limit": 1,
-            "countrycodes": "pe"
+
+            "text":
+                direccion_busqueda,
+
+            "boundary.country":
+                "PE",
+
+            # Centro aproximado de Cerro de Pasco
+            "focus.point.lat":
+                "-10.6864",
+
+            "focus.point.lon":
+                "-76.2625",
+
+            "api_key":
+                api_key
         }
 
-        headers = {
-            "User-Agent": "SistemaGestionEntregas/1.0"
-        }
+
+        print(
+            "=========================================="
+        )
+
+        print(
+            "GEOCODIFICANDO DIRECCIÓN"
+        )
+
+        print(
+            "Original:",
+            direccion_original
+        )
+
+        print(
+            "Búsqueda:",
+            direccion_busqueda
+        )
+
+        print(
+            "=========================================="
+        )
+
 
         respuesta = requests.get(
             url,
             params=parametros,
-            headers=headers,
-            timeout=10
+            timeout=15
         )
 
-        respuesta.raise_for_status()
 
-        resultados = respuesta.json()
+        # ==========================================
+        # ERROR API
+        # ==========================================
 
-        if not resultados:
+        if respuesta.status_code != 200:
+
+            print(
+                "ERROR ORS:",
+                respuesta.text
+            )
 
             return jsonify({
-                "error": "No se encontró la ubicación"
+                "error":
+                    "Error de OpenRouteService: "
+                    + respuesta.text
+            }), respuesta.status_code
+
+
+        resultado = respuesta.json()
+
+
+        features = resultado.get(
+            "features",
+            []
+        )
+
+
+        # ==========================================
+        # SIN RESULTADOS
+        # ==========================================
+
+        if not features:
+
+            return jsonify({
+                "error":
+                    "No se encontró la dirección "
+                    "en Cerro de Pasco."
             }), 404
 
-        ubicacion = resultados[0]
+
+        # ==========================================
+        # BUSCAR EL MEJOR RESULTADO
+        # ==========================================
+
+        mejor_resultado = None
+        mejor_puntaje = -999999
+
+
+        for feature in features:
+
+            propiedades = feature.get(
+                "properties",
+                {}
+            )
+
+            coordenadas = feature.get(
+                "geometry",
+                {}
+            ).get(
+                "coordinates",
+                []
+            )
+
+
+            if len(coordenadas) < 2:
+                continue
+
+
+            longitud = float(
+                coordenadas[0]
+            )
+
+            latitud = float(
+                coordenadas[1]
+            )
+
+
+            # --------------------------------------
+            # INFORMACIÓN DEL RESULTADO
+            # --------------------------------------
+
+            label = str(
+                propiedades.get(
+                    "label",
+                    ""
+                )
+            ).lower()
+
+            localidad = str(
+                propiedades.get(
+                    "locality",
+                    ""
+                )
+            ).lower()
+
+            distrito = str(
+                propiedades.get(
+                    "localadmin",
+                    ""
+                )
+            ).lower()
+
+            region = str(
+                propiedades.get(
+                    "region",
+                    ""
+                )
+            ).lower()
+
+            layer = str(
+                propiedades.get(
+                    "layer",
+                    ""
+                )
+            ).lower()
+
+
+            # --------------------------------------
+            # PUNTAJE
+            # --------------------------------------
+
+            puntaje = 0
+
+
+            # Cerro de Pasco
+            if "cerro de pasco" in label:
+                puntaje += 100
+
+            if "cerro de pasco" in localidad:
+                puntaje += 100
+
+            if "cerro de pasco" in distrito:
+                puntaje += 50
+
+
+            # Pasco
+            if "pasco" in label:
+                puntaje += 20
+
+            if "pasco" in region:
+                puntaje += 20
+
+
+            # Priorizar direcciones
+            if layer == "address":
+                puntaje += 50
+
+            elif layer == "street":
+                puntaje += 30
+
+            elif layer == "venue":
+                puntaje += 40
+
+            elif layer == "locality":
+                puntaje += 10
+
+
+            # --------------------------------------
+            # DISTANCIA APROXIMADA A CERRO DE PASCO
+            # --------------------------------------
+
+            lat_centro = -10.6864
+            lon_centro = -76.2625
+
+
+            diferencia_lat = (
+                latitud - lat_centro
+            )
+
+            diferencia_lon = (
+                longitud - lon_centro
+            )
+
+
+            distancia_aprox = (
+                (
+                    diferencia_lat ** 2
+                    +
+                    diferencia_lon ** 2
+                )
+                ** 0.5
+            )
+
+
+            # Penalizar resultados demasiado alejados
+            if distancia_aprox > 0.10:
+                puntaje -= 1000
+
+            elif distancia_aprox > 0.05:
+                puntaje -= 500
+
+            elif distancia_aprox > 0.02:
+                puntaje -= 100
+
+
+            # --------------------------------------
+            # COMPARAR
+            # --------------------------------------
+
+            if puntaje > mejor_puntaje:
+
+                mejor_puntaje = puntaje
+
+                mejor_resultado = {
+                    "latitud":
+                        latitud,
+
+                    "longitud":
+                        longitud,
+
+                    "label":
+                        propiedades.get(
+                            "label",
+                            direccion_original
+                        ),
+
+                    "puntaje":
+                        puntaje,
+
+                    "layer":
+                        layer
+                }
+
+
+        # ==========================================
+        # NINGÚN RESULTADO VÁLIDO
+        # ==========================================
+
+        if mejor_resultado is None:
+
+            return jsonify({
+                "error":
+                    "No se encontró una ubicación "
+                    "válida en Cerro de Pasco."
+            }), 404
+
+
+        # ==========================================
+        # MOSTRAR RESULTADO
+        # ==========================================
+
+        print(
+            "=========================================="
+        )
+
+        print(
+            "MEJOR RESULTADO"
+        )
+
+        print(
+            "Dirección:",
+            mejor_resultado["label"]
+        )
+
+        print(
+            "Latitud:",
+            mejor_resultado["latitud"]
+        )
+
+        print(
+            "Longitud:",
+            mejor_resultado["longitud"]
+        )
+
+        print(
+            "Tipo:",
+            mejor_resultado["layer"]
+        )
+
+        print(
+            "Puntaje:",
+            mejor_resultado["puntaje"]
+        )
+
+        print(
+            "=========================================="
+        )
+
+
+        # ==========================================
+        # RESPUESTA
+        # ==========================================
 
         return jsonify({
 
-            "direccion": ubicacion["display_name"],
+            "latitud":
+                mejor_resultado["latitud"],
 
-            "latitud": float(
-                ubicacion["lat"]
-            ),
+            "longitud":
+                mejor_resultado["longitud"],
 
-            "longitud": float(
-                ubicacion["lon"]
-            )
+            "direccion":
+                mejor_resultado["label"],
 
+            "precision":
+                mejor_resultado["layer"]
         })
 
+
     except Exception as e:
+
+        print(
+            "ERROR EN GEOCODIFICACIÓN:",
+            str(e)
+        )
 
         return jsonify({
             "error": str(e)
         }), 500
-        
+
 # ==========================================
 # EJECUTAR SERVIDOR
 # ==========================================
