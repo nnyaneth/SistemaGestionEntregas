@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sistema de Gestión</title>
+
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <!-- CSS -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/estilos.css') }}"
+    >
+
+</head>
+
+
+<body class="menu-body">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+         ===================================================== -->
+
+    <header class="menu-header">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+
+                <i class="bi bi-shop"></i>
+
+            </div>
+
+
+            <div>
+
+                <h1>
+                    Sistema de Gestión
+                </h1>
+
+                <p>
+                    Control de operaciones
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="header-status">
+
+            <span class="status-dot"></span>
+
+            Sistema operativo
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CONTENIDO
+         ===================================================== -->
+
+    <main class="menu-container">
+
+
+        <!-- PRESENTACIÓN -->
+
+        <section class="bienvenida">
+
+            <div class="saludo">
+
+                CENTRO DE OPERACIONES
+
+            </div>
+
+
+            <h2>
+                Gestión del negocio
+            </h2>
+
+
+            <p>
+                Administra pedidos, productos, clientes y entregas
+                desde un solo lugar.
+            </p>
+
+        </section>
+
+
+
+        <!-- =================================================
+             MÓDULOS
+             ================================================= -->
+
+        <section class="menu-grid">
+
+
+            <!-- CLIENTES -->
+
+            <a
+                href="/clientes-pagina"
+                class="menu-card"
+            >
+
+                <div class="card-icon">
+
+                    <i class="bi bi-people"></i>
+
+                </div>
+
+
+                <div class="card-content">
+
+                    <span class="card-category">
+                        INFORMACIÓN
+                    </span>
+
+                    <h3>
+                        Clientes
+                    </h3>
+
+                    <p>
+                        Consulta y administra los datos
+                        de los clientes.
+                    </p>
+
+                </div>
+
+
+                <span class="card-arrow">
+
+                    <i class="bi bi-arrow-up-right"></i>
+
+                </span>
+
+            </a>
+
+
+
+            <!-- PRODUCTOS -->
+
+            <a
+                href="/productos-pagina"
+                class="menu-card"
+            >
+
+                <div class="card-icon">
+
+                    <i class="bi bi-box-seam"></i>
+
+                </div>
+
+
+                <div class="card-content">
+
+                    <span class="card-category">
+                        CATÁLOGO
+                    </span>
+
+                    <h3>
+                        Productos
+                    </h3>
+
+                    <p>
+                        Gestiona productos, precios
+                        y disponibilidad.
+                    </p>
+
+                </div>
+
+
+                <span class="card-arrow">
+
+                    <i class="bi bi-arrow-up-right"></i>
+
+                </span>
+
+            </a>
+
+
+
+            <!-- PEDIDOS -->
+
+            <a
+                href="/pedidos-pagina"
+                class="menu-card"
+            >
+
+                <div class="card-icon">
+
+                    <i class="bi bi-receipt"></i>
+
+                </div>
+
+
+                <div class="card-content">
+
+                    <span class="card-category">
+                        VENTAS
+                    </span>
+
+                    <h3>
+                        Pedidos
+                    </h3>
+
+                    <p>
+                        Controla pedidos, productos
+                        y estados de preparación.
+                    </p>
+
+                </div>
+
+
+                <span class="card-arrow">
+
+                    <i class="bi bi-arrow-up-right"></i>
+
+                </span>
+
+            </a>
+
+
+
+            <!-- REPARTIDORES -->
+
+            <a
+                href="/repartidores-pagina"
+                class="menu-card"
+            >
+
+                <div class="card-icon">
+
+                    <i class="bi bi-person-badge"></i>
+
+                </div>
+
+
+                <div class="card-content">
+
+                    <span class="card-category">
+                        PERSONAL
+                    </span>
+
+                    <h3>
+                        Repartidores
+                    </h3>
+
+                    <p>
+                        Consulta disponibilidad y
+                        asignación del personal.
+                    </p>
+
+                </div>
+
+
+                <span class="card-arrow">
+
+                    <i class="bi bi-arrow-up-right"></i>
+
+                </span>
+
+            </a>
+
+
+
+            <!-- ENTREGAS -->
+
+            <a
+                href="/entregas-pagina"
+                class="menu-card menu-card-destacada"
+            >
+
+                <div class="card-icon">
+
+                    <i class="bi bi-truck"></i>
+
+                </div>
+
+
+                <div class="card-content">
+
+                    <span class="card-category">
+                        OPERACIÓN
+                    </span>
+
+                    <h3>
+                        Entregas
+                    </h3>
+
+                    <p>
+                        Asigna repartidores y controla
+                        el estado de cada entrega.
+                    </p>
+
+                </div>
+
+
+                <span class="card-arrow">
+
+                    <i class="bi bi-arrow-up-right"></i>
+
+                </span>
+
+            </a>
+
+
+
+            <!-- DASHBOARD -->
+
+            <a
+                href="/dashboard"
+                class="menu-card dashboard-card"
+            >
+
+                <div class="card-icon">
+
+                    <i class="bi bi-bar-chart-line"></i>
+
+                </div>
+
+
+                <div class="card-content">
+
+                    <span class="card-category">
+                        ANÁLISIS
+                    </span>
+
+                    <h3>
+                        Dashboard
+                    </h3>
+
+                    <p>
+                        Visualiza indicadores y rendimiento
+                        de la operación.
+                    </p>
+
+                </div>
+
+
+                <span class="card-arrow">
+
+                    <i class="bi bi-arrow-up-right"></i>
+
+                </span>
+
+            </a>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         PIE
+         ===================================================== -->
+
+    <footer class="menu-footer">
+
+        <div>
+
+            <strong>
+                Sistema de Gestión
+            </strong>
+
+            <span>
+                · Panel administrativo
+            </span>
+
+        </div>
+
+
+        <div class="footer-right">
+
+            <span class="status-dot"></span>
+
+            Operación normal
+
+        </div>
+
+    </footer>
+
+
+</body>
+
+</html>

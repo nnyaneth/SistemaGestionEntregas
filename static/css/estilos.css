@@ -1,0 +1,7967 @@
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 40px;
+}
+
+
+.contenedor {
+    max-width: 1000px;
+    margin: auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+h1 {
+    margin-top: 0;
+    color: #333;
+}
+
+
+h2 {
+    color: #555;
+}
+
+
+#formularioCliente {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+
+.campo {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.campo label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+
+.campo input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
+.boton {
+    grid-column: span 2;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+.boton:hover {
+    background-color: #555;
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+
+th,
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+
+th {
+    background-color: #333;
+    color: white;
+}
+
+
+/* =========================================================
+   SISTEMA DE GESTIÓN DE ENTREGAS
+   MENÚ PRINCIPAL
+   ========================================================= */
+
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+:root {
+
+    --rojo: #a92f29;
+
+    --rojo-oscuro: #79221f;
+
+    --rojo-suave: #c95448;
+
+    --amarillo: #e7bd45;
+
+    --amarillo-claro: #f4d982;
+
+    --crema: #fff8e8;
+
+    --fondo: #f5f2eb;
+
+    --blanco: #ffffff;
+
+    --texto: #302d2a;
+
+    --texto-suave: #766f68;
+
+    --borde: #e5ded2;
+
+}
+
+
+/* =========================================================
+   CONFIGURACIÓN GENERAL
+   ========================================================= */
+
+* {
+
+    box-sizing: border-box;
+
+}
+
+
+html {
+
+    height: 100%;
+
+}
+
+
+body.menu-body {
+
+    margin: 0;
+
+    height: 100vh;
+
+    overflow: hidden;
+
+    font-family:
+        "Segoe UI",
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+
+    color: var(--texto);
+
+    background:
+        radial-gradient(
+            circle at 85% 10%,
+            rgba(231, 189, 69, 0.18),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 10% 90%,
+            rgba(169, 47, 41, 0.07),
+            transparent 28%
+        ),
+        var(--fondo);
+
+}
+
+
+/* =========================================================
+   ENCABEZADO FIJO
+   ========================================================= */
+
+.menu-header {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 76px;
+
+    z-index: 1000;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 0 42px;
+
+    background:
+        linear-gradient(
+            110deg,
+            var(--rojo-oscuro),
+            var(--rojo)
+        );
+
+    box-shadow:
+        0 3px 16px rgba(65, 30, 25, 0.20);
+
+}
+
+
+/* =========================================================
+   MARCA
+   ========================================================= */
+
+.logo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+}
+
+
+.logo-icon {
+
+    width: 47px;
+
+    height: 47px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: var(--amarillo);
+
+    border-radius: 12px;
+
+    font-size: 24px;
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,0.12);
+
+}
+
+
+.logo h1 {
+
+    margin: 0;
+
+    color: white;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 21px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.2px;
+
+}
+
+
+.logo p {
+
+    margin: 2px 0 0;
+
+    color: rgba(255,255,255,0.75);
+
+    font-size: 11px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.4px;
+
+}
+
+
+/* =========================================================
+   CONTENIDO CON SCROLL
+   ========================================================= */
+
+.menu-container {
+
+    position: fixed;
+
+    top: 76px;
+
+    bottom: 61px;
+
+    left: 0;
+
+    right: 0;
+
+    overflow-y: auto;
+
+    padding: 42px 45px 55px;
+
+}
+
+
+/* =========================================================
+   BARRA SUPERIOR DEL CONTENIDO
+   ========================================================= */
+
+.bienvenida {
+
+    max-width: 1120px;
+
+    margin: 0 auto 30px;
+
+    position: relative;
+
+    padding: 8px 0;
+
+}
+
+
+/* Línea decorativa */
+
+.bienvenida::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    top: -4px;
+
+    width: 55px;
+
+    height: 4px;
+
+    border-radius: 5px;
+
+    background: var(--amarillo);
+
+}
+
+
+.saludo {
+
+    display: inline-block;
+
+    margin-top: 9px;
+
+    margin-bottom: 9px;
+
+    padding: 5px 10px;
+
+    color: var(--rojo);
+
+    background: #f4e9c9;
+
+    border-radius: 5px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+}
+
+
+.bienvenida h2 {
+
+    margin: 0 0 7px;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 32px;
+
+    line-height: 1.15;
+
+    font-weight: 600;
+
+    color: #302b28;
+
+}
+
+
+.bienvenida p {
+
+    margin: 0;
+
+    max-width: 620px;
+
+    color: var(--texto-suave);
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+}
+
+
+/* =========================================================
+   MENÚ
+   ========================================================= */
+
+.menu-grid {
+
+    max-width: 1120px;
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            1fr
+        );
+
+    gap: 17px;
+
+}
+
+
+/* =========================================================
+   TARJETAS
+   ========================================================= */
+
+.menu-card {
+
+    position: relative;
+
+    min-height: 145px;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 16px;
+
+    padding: 23px;
+
+    overflow: hidden;
+
+    background: rgba(255,255,255,0.90);
+
+    border: 1px solid var(--borde);
+
+    border-radius: 14px;
+
+    text-decoration: none;
+
+    color: var(--texto);
+
+    box-shadow:
+        0 4px 14px rgba(50, 40, 30, 0.055);
+
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease;
+
+}
+
+
+/* Decoración lateral */
+
+.menu-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    top: 0;
+
+    bottom: 0;
+
+    width: 4px;
+
+    background: transparent;
+
+    transition:
+        background .22s ease;
+
+}
+
+
+.menu-card:hover {
+
+    transform:
+        translateY(-4px);
+
+    border-color:
+        #d8cda9;
+
+    box-shadow:
+        0 12px 25px rgba(60, 45, 35, 0.12);
+
+}
+
+
+.menu-card:hover::before {
+
+    background:
+        var(--amarillo);
+
+}
+
+
+/* =========================================================
+   ICONOS
+   ========================================================= */
+
+.card-icon {
+
+    flex-shrink: 0;
+
+    width: 53px;
+
+    height: 53px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background:
+        #f4ead0;
+
+    font-size: 25px;
+
+    transition:
+        transform .22s ease,
+        background .22s ease;
+
+}
+
+
+.menu-card:hover .card-icon {
+
+    transform:
+        scale(1.07);
+
+    background:
+        #f0dfad;
+
+}
+
+
+/* =========================================================
+   INFORMACIÓN
+   ========================================================= */
+
+.card-content {
+
+    flex: 1;
+
+    padding-top: 1px;
+
+}
+
+
+.card-content h3 {
+
+    margin: 0 0 7px;
+
+    color: #37322e;
+
+    font-size: 17px;
+
+    font-weight: 650;
+
+}
+
+
+.card-content p {
+
+    margin: 0;
+
+    color: #7a746d;
+
+    font-size: 12.5px;
+
+    line-height: 1.55;
+
+}
+
+
+/* =========================================================
+   FLECHA
+   ========================================================= */
+
+.card-arrow {
+
+    position: absolute;
+
+    right: 18px;
+
+    bottom: 16px;
+
+    color: var(--rojo);
+
+    font-size: 18px;
+
+    opacity: 0;
+
+    transform:
+        translateX(-5px);
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+
+}
+
+
+.menu-card:hover .card-arrow {
+
+    opacity: 1;
+
+    transform:
+        translateX(0);
+
+}
+
+
+/* =========================================================
+   ENTREGAS — MÓDULO PRINCIPAL
+   ========================================================= */
+
+.menu-card-destacada {
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff9e8,
+            #fffdf8
+        );
+
+    border:
+        1px solid #ddc46c;
+
+    box-shadow:
+        0 5px 18px rgba(140, 105, 35, 0.10);
+
+}
+
+
+.menu-card-destacada::after {
+
+    content: "OPERACIÓN";
+
+    position: absolute;
+
+    top: 12px;
+
+    right: 14px;
+
+    padding: 4px 7px;
+
+    border-radius: 4px;
+
+    background: var(--amarillo);
+
+    color: #493b18;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.8px;
+
+}
+
+
+.menu-card-destacada .card-icon {
+
+    background:
+        var(--amarillo);
+
+}
+
+
+.menu-card-destacada .card-content h3 {
+
+    color:
+        var(--rojo);
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+.menu-card:last-child {
+
+    background:
+        #302d2a;
+
+    border-color:
+        #302d2a;
+
+}
+
+
+.menu-card:last-child .card-icon {
+
+    background:
+        #49443f;
+
+}
+
+
+.menu-card:last-child .card-content h3 {
+
+    color:
+        white;
+
+}
+
+
+.menu-card:last-child .card-content p {
+
+    color:
+        #c7c1b9;
+
+}
+
+
+.menu-card:last-child .card-arrow {
+
+    color:
+        var(--amarillo);
+
+}
+
+
+/* =========================================================
+   FOOTER FIJO
+   ========================================================= */
+
+.menu-footer {
+
+    position: fixed;
+
+    left: 0;
+
+    bottom: 0;
+
+    width: 100%;
+
+    height: 61px;
+
+    z-index: 1000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 42px;
+
+    background:
+        #302d2a;
+
+    color: #d7d1ca;
+
+    border-top:
+        3px solid var(--amarillo);
+
+}
+
+
+.menu-footer p {
+
+    margin: 0;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+
+.menu-footer span {
+
+    font-size: 11px;
+
+    color: #99928a;
+
+}
+
+
+/* =========================================================
+   BARRA DE SCROLL
+   ========================================================= */
+
+.menu-container::-webkit-scrollbar {
+
+    width: 7px;
+
+}
+
+
+.menu-container::-webkit-scrollbar-track {
+
+    background:
+        transparent;
+
+}
+
+
+.menu-container::-webkit-scrollbar-thumb {
+
+    background:
+        #d2cbc0;
+
+    border-radius:
+        10px;
+
+}
+
+
+.menu-container::-webkit-scrollbar-thumb:hover {
+
+    background:
+        #b9b0a3;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 950px) {
+
+    .menu-grid {
+
+        grid-template-columns:
+            repeat(
+                2,
+                1fr
+            );
+
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .menu-header {
+
+        height: 68px;
+
+        padding: 0 20px;
+
+    }
+
+
+    .logo h1 {
+
+        font-size: 18px;
+
+    }
+
+
+    .logo p {
+
+        font-size: 9px;
+
+    }
+
+
+    .menu-container {
+
+        top: 68px;
+
+        bottom: 55px;
+
+        padding:
+            32px 18px 45px;
+
+    }
+
+
+    .bienvenida h2 {
+
+        font-size: 27px;
+
+    }
+
+
+    .menu-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .menu-footer {
+
+        height: 55px;
+
+        padding: 0 20px;
+
+    }
+
+}
+
+/* =========================================================
+   ICONOS PROFESIONALES
+   ========================================================= */
+
+.logo-icon i,
+.card-icon i {
+
+    line-height: 1;
+
+}
+
+
+/* =========================================================
+   ESTADO DEL SISTEMA
+   ========================================================= */
+
+.header-status {
+
+    margin-left: auto;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: rgba(255,255,255,0.82);
+
+    font-size: 11px;
+
+    letter-spacing: 0.4px;
+
+}
+
+
+.status-dot {
+
+    display: inline-block;
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #e7bd45;
+
+    box-shadow:
+        0 0 0 3px rgba(231,189,69,0.15);
+
+}
+
+
+/* =========================================================
+   CATEGORÍA DE CADA MÓDULO
+   ========================================================= */
+
+.card-category {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #a09283;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.2px;
+
+}
+
+
+/* =========================================================
+   ICONOS DE MÓDULOS
+   ========================================================= */
+
+.card-icon {
+
+    position: relative;
+
+}
+
+
+.card-icon i {
+
+    color: #9d332d;
+
+    font-size: 23px;
+
+}
+
+
+/* =========================================================
+   EFECTO DEL ICONO
+   ========================================================= */
+
+.menu-card:hover .card-icon i {
+
+    transform: scale(1.08);
+
+}
+
+
+.card-icon i {
+
+    display: inline-block;
+
+    transition:
+        transform .2s ease;
+
+}
+
+
+/* =========================================================
+   ENTREGAS DESTACADA
+   ========================================================= */
+
+.menu-card-destacada .card-icon i {
+
+    color: #503f18;
+
+}
+
+
+.menu-card-destacada {
+
+    position: relative;
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+.dashboard-card {
+
+    background:
+        #302d2a;
+
+}
+
+
+.dashboard-card .card-category {
+
+    color: #aaa198;
+
+}
+
+
+.dashboard-card .card-icon i {
+
+    color: #e7bd45;
+
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.menu-footer {
+
+    font-size: 11px;
+
+}
+
+
+.menu-footer strong {
+
+    color: #e9e3db;
+
+    font-weight: 600;
+
+}
+
+
+.menu-footer span {
+
+    color: #948d85;
+
+}
+
+
+.footer-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+
+.footer-right .status-dot {
+
+    width: 6px;
+
+    height: 6px;
+
+}
+
+
+/* =========================================================
+   MÓVIL
+   ========================================================= */
+
+@media (max-width: 650px) {
+
+    .header-status {
+
+        display: none;
+
+    }
+
+}
+
+
+/* =========================================================
+   SISTEMA DE GESTIÓN DE ENTREGAS
+   ESTILO GENERAL - MÓDULO ENTREGAS
+   ========================================================= */
+
+
+/* =========================================================
+   FUENTES
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap');
+
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+:root {
+
+    --rojo: #a63d32;
+    --rojo-oscuro: #873129;
+    --rojo-suave: #f5e8e5;
+
+    --amarillo: #d5a83c;
+    --amarillo-suave: #f6f0df;
+
+    --crema: #f4f1eb;
+    --blanco: #ffffff;
+
+    --texto: #302e2b;
+    --texto-secundario: #716b64;
+    --texto-suave: #9a938b;
+
+    --borde: #e3ded6;
+    --fondo-input: #fcfbf9;
+
+    --oscuro: #292725;
+
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+
+/* =========================================================
+   CUERPO DEL MÓDULO
+   ========================================================= */
+
+.modulo-body {
+
+    min-height: 100vh;
+
+    background: var(--crema);
+
+    color: var(--texto);
+
+    font-family:
+        "DM Sans",
+        Arial,
+        sans-serif;
+
+    display: flex;
+    flex-direction: column;
+
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+.modulo-header {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 76px;
+
+    padding: 0 45px;
+
+    background: var(--oscuro);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    z-index: 1000;
+
+    box-shadow:
+        0 3px 14px rgba(0, 0, 0, 0.12);
+
+}
+
+
+/* =========================================================
+   IDENTIDAD DEL MÓDULO
+   ========================================================= */
+
+.modulo-identidad {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+}
+
+
+.volver-menu {
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    color: #c8c2ba;
+
+    text-decoration: none;
+
+    transition:
+        background .2s ease,
+        color .2s ease;
+
+}
+
+
+.volver-menu:hover {
+
+    background: rgba(255,255,255,0.08);
+
+    color: #ffffff;
+
+}
+
+
+.volver-menu i {
+
+    font-size: 17px;
+
+}
+
+
+.modulo-icono {
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 10px;
+
+    background: var(--rojo);
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.modulo-icono i {
+
+    font-size: 19px;
+
+}
+
+
+.modulo-seccion {
+
+    display: block;
+
+    color: #aaa39b;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    line-height: 1;
+
+    margin-bottom: 5px;
+
+}
+
+
+.modulo-header h1 {
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    font-size: 21px;
+
+    font-weight: 600;
+
+    line-height: 1;
+
+}
+
+
+/* =========================================================
+   ESTADO DEL SISTEMA
+   ========================================================= */
+
+.header-status {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #aaa39b;
+
+    font-size: 10px;
+
+    font-weight: 500;
+
+}
+
+
+.status-dot {
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #7ca66a;
+
+    display: inline-block;
+
+    box-shadow:
+        0 0 0 3px rgba(124,166,106,.10);
+
+}
+
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
+
+.modulo-container {
+
+    width: min(1180px, calc(100% - 70px));
+
+    margin: 0 auto;
+
+    padding-top: 111px;
+
+    padding-bottom: 45px;
+
+    flex: 1;
+
+}
+
+
+/* =========================================================
+   INTRO DEL MÓDULO
+   ========================================================= */
+
+.modulo-intro {
+
+    min-height: 154px;
+
+    padding: 29px 34px;
+
+    background: var(--blanco);
+
+    border: 1px solid var(--borde);
+
+    border-radius: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    position: relative;
+
+    overflow: hidden;
+
+    margin-bottom: 25px;
+
+}
+
+
+.modulo-intro::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 6px;
+    height: 100%;
+
+    background: var(--rojo);
+
+}
+
+
+.modulo-intro::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 210px;
+    height: 210px;
+
+    right: -85px;
+    bottom: -125px;
+
+    border-radius: 50%;
+
+    border: 38px solid var(--amarillo-suave);
+
+}
+
+
+/* =========================================================
+   TEXTO INTRO
+   ========================================================= */
+
+.intro-label {
+
+    color: var(--rojo);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+}
+
+
+.modulo-intro h2 {
+
+    margin: 8px 0 7px;
+
+    color: var(--texto);
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    font-size: 27px;
+
+    font-weight: 700;
+
+    letter-spacing: -.5px;
+
+}
+
+
+.modulo-intro p {
+
+    margin: 0;
+
+    max-width: 680px;
+
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+}
+
+
+/* =========================================================
+   ICONO DECORATIVO
+   ========================================================= */
+
+.intro-marca {
+
+    width: 86px;
+    height: 86px;
+
+    margin-right: 35px;
+
+    border-radius: 50%;
+
+    background: var(--amarillo-suave);
+
+    color: var(--rojo);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    position: relative;
+
+    z-index: 2;
+
+}
+
+
+.intro-marca i {
+
+    font-size: 35px;
+
+}
+
+
+/* =========================================================
+   PANELES
+   ========================================================= */
+
+.panel {
+
+    background: var(--blanco);
+
+    border: 1px solid var(--borde);
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 3px 15px rgba(40,35,30,.035);
+
+}
+
+
+/* =========================================================
+   CABECERA DE PANEL
+   ========================================================= */
+
+.panel-header {
+
+    min-height: 72px;
+
+    padding: 15px 25px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border-bottom: 1px solid #eeeae4;
+
+}
+
+
+.panel-titulo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+}
+
+
+.panel-icono {
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 9px;
+
+    background: var(--rojo-suave);
+
+    color: var(--rojo);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.panel-icono i {
+
+    font-size: 17px;
+
+}
+
+
+.panel-icono-amarillo {
+
+    background: var(--amarillo-suave);
+
+    color: #866b23;
+
+}
+
+
+.panel-titulo span {
+
+    display: block;
+
+    color: var(--texto-suave);
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.3px;
+
+    margin-bottom: 3px;
+
+}
+
+
+.panel-titulo h3 {
+
+    margin: 0;
+
+    color: var(--texto);
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+}
+
+
+.panel-numero {
+
+    color: #c1bbb3;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+}
+
+
+/* =========================================================
+   DISTRIBUCIÓN DEL PANEL DE ENTREGA
+   FORMULARIO + MAPA
+   ========================================================= */
+
+.entrega-layout {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(400px, 1fr);
+
+    gap: 0;
+
+}
+
+
+/* =========================================================
+   COLUMNA DEL FORMULARIO
+   ========================================================= */
+
+.entrega-formulario {
+
+    padding: 27px 25px 24px;
+
+    border-right: 1px solid #eeeae5;
+
+}
+
+
+.entrega-formulario form {
+
+    padding: 0;
+
+}
+
+
+/* =========================================================
+   CAMPOS DEL FORMULARIO
+   ========================================================= */
+
+.entrega-formulario .campo {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    margin-bottom: 19px;
+
+}
+
+
+.entrega-formulario .campo label {
+
+    color: #57514b;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   INPUTS Y SELECTS
+   ========================================================= */
+
+.input-contenedor {
+
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    background: var(--fondo-input);
+
+    border: 1px solid #dcd6ce;
+
+    border-radius: 8px;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.input-contenedor i {
+
+    width: 41px;
+
+    flex-shrink: 0;
+
+    text-align: center;
+
+    color: #aaa39b;
+
+    font-size: 14px;
+
+    transition:
+        color .2s ease;
+
+}
+
+
+.input-contenedor input,
+.input-contenedor select {
+
+    width: 100%;
+
+    height: 100%;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    padding: 0 12px 0 0;
+
+    color: var(--texto);
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 12px;
+
+}
+
+
+.input-contenedor input::placeholder {
+
+    color: #b4aea7;
+
+}
+
+
+.input-contenedor select {
+
+    cursor: pointer;
+
+    appearance: auto;
+
+}
+
+
+.input-contenedor:focus-within {
+
+    background: #ffffff;
+
+    border-color: #b65c54;
+
+    box-shadow:
+        0 0 0 3px rgba(166,61,50,.07);
+
+}
+
+
+.input-contenedor:focus-within i {
+
+    color: var(--rojo);
+
+}
+
+
+/* =========================================================
+   INFORMACIÓN DE LA RUTA
+   ========================================================= */
+
+.ruta-informacion {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+
+    margin-top: 3px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.ruta-dato {
+
+    min-height: 65px;
+
+    padding: 11px 13px;
+
+    background: #f8f6f3;
+
+    border: 1px solid #e4dfd8;
+
+    border-radius: 8px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 5px;
+
+}
+
+
+.ruta-dato span {
+
+    color: var(--texto-suave);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: .7px;
+
+}
+
+
+.ruta-dato span i {
+
+    margin-right: 4px;
+
+    color: var(--rojo);
+
+}
+
+
+.ruta-dato strong {
+
+    color: var(--texto);
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   ESTADO DE LA RUTA
+   ========================================================= */
+
+.estado-ruta {
+
+    min-height: 38px;
+
+    padding: 9px 12px;
+
+    margin-bottom: 18px;
+
+    border-radius: 7px;
+
+    background: #faf8f5;
+
+    border: 1px solid #ebe6df;
+
+    color: var(--texto-suave);
+
+    font-size: 9.5px;
+
+    line-height: 1.4;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+}
+
+
+.estado-ruta i {
+
+    color: var(--rojo);
+
+    font-size: 12px;
+
+}
+
+
+/* =========================================================
+   PIE DEL FORMULARIO
+   ========================================================= */
+
+.form-footer {
+
+    margin-top: 20px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #eeeae5;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+}
+
+
+.form-ayuda {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #9a938c;
+
+    font-size: 10px;
+
+    line-height: 1.4;
+
+}
+
+
+.form-ayuda i {
+
+    color: #aaa29a;
+
+}
+
+
+/* =========================================================
+   BOTÓN PRINCIPAL
+   ========================================================= */
+
+.boton {
+
+    border: none;
+
+    outline: none;
+
+    cursor: pointer;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+}
+
+
+.boton-principal {
+
+    min-height: 42px;
+
+    padding: 0 19px;
+
+    border-radius: 8px;
+
+    background: var(--rojo);
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    font-size: 11px;
+
+    font-weight: 650;
+
+    transition:
+        background .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.boton-principal:hover {
+
+    background: var(--rojo-oscuro);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 14px rgba(135,49,41,.16);
+
+}
+
+
+.boton-principal:active {
+
+    transform: translateY(0);
+
+}
+
+
+.boton-principal i {
+
+    font-size: 13px;
+
+}
+
+
+/* =========================================================
+   MAPA
+   ========================================================= */
+
+.entrega-mapa {
+
+    min-width: 0;
+
+    background: #f8f6f3;
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+/* =========================================================
+   CABECERA DEL MAPA
+   ========================================================= */
+
+.mapa-header {
+
+    min-height: 72px;
+
+    padding: 15px 20px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #eeeae5;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+}
+
+
+.mapa-header span {
+
+    display: block;
+
+    color: var(--texto-suave);
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.3px;
+
+    margin-bottom: 3px;
+
+}
+
+
+.mapa-header h3 {
+
+    margin: 0;
+
+    color: var(--texto);
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+}
+
+
+.mapa-header > i {
+
+    width: 35px;
+
+    height: 35px;
+
+    border-radius: 9px;
+
+    background: var(--amarillo-suave);
+
+    color: #866b23;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 15px;
+
+}
+
+
+/* =========================================================
+   CONTENEDOR DEL MAPA LEAFLET
+   ========================================================= */
+
+.mapa-entrega {
+
+    width: 100%;
+
+    height: 390px;
+
+    min-height: 390px;
+
+    background: #e8e5df;
+
+}
+
+
+/* =========================================================
+   CONTROLES DE LEAFLET
+   ========================================================= */
+
+.mapa-entrega .leaflet-control-zoom {
+
+    border: 1px solid rgba(0,0,0,.10);
+
+    box-shadow:
+        0 2px 7px rgba(0,0,0,.12);
+
+}
+
+
+.mapa-entrega .leaflet-control-zoom a {
+
+    color: var(--texto);
+
+}
+
+
+/* =========================================================
+   INFORMACIÓN DEL ORIGEN
+   ========================================================= */
+
+.mapa-origen {
+
+    min-height: 68px;
+
+    padding: 11px 18px;
+
+    background: #ffffff;
+
+    border-top: 1px solid #eeeae5;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+}
+
+
+.mapa-origen > i {
+
+    width: 34px;
+
+    height: 34px;
+
+    flex-shrink: 0;
+
+    border-radius: 8px;
+
+    background: var(--rojo-suave);
+
+    color: var(--rojo);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 13px;
+
+}
+
+
+.mapa-origen span {
+
+    display: block;
+
+    color: var(--texto-suave);
+
+    font-size: 7.5px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    margin-bottom: 3px;
+
+}
+
+
+.mapa-origen strong {
+
+    display: block;
+
+    color: var(--texto-secundario);
+
+    font-size: 9.5px;
+
+    font-weight: 600;
+
+    line-height: 1.3;
+
+}
+
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+
+.tabla-contenedor {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+}
+
+
+.tabla-panel table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+
+.tabla-panel thead {
+
+    background: #f8f6f3;
+
+}
+
+
+.tabla-panel th {
+
+    height: 44px;
+
+    padding: 0 17px;
+
+    border-bottom: 1px solid #e4dfd8;
+
+    color: #78716a;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+    font-size: 8.5px;
+
+    font-weight: 750;
+
+    letter-spacing: .85px;
+
+    text-transform: uppercase;
+
+}
+
+
+.tabla-panel td {
+
+    height: 55px;
+
+    padding: 8px 17px;
+
+    border-bottom: 1px solid #eeeae5;
+
+    color: #514c47;
+
+    font-size: 11.5px;
+
+    vertical-align: middle;
+
+}
+
+
+.tabla-panel tbody tr {
+
+    transition:
+        background .15s ease;
+
+}
+
+
+.tabla-panel tbody tr:hover {
+
+    background: #fcfaf7;
+
+}
+
+
+.tabla-panel tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+/* =========================================================
+   ID
+   ========================================================= */
+
+.tabla-panel td:first-child {
+
+    color: var(--rojo);
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   ACCIONES
+   ========================================================= */
+
+.tabla-panel td:last-child {
+
+    white-space: nowrap;
+
+}
+
+
+.tabla-panel td button {
+
+    height: 31px;
+
+    padding: 0 11px;
+
+    margin-right: 4px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 10px;
+
+    font-weight: 650;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    transition:
+        background .18s ease,
+        border-color .18s ease,
+        color .18s ease,
+        transform .18s ease,
+        box-shadow .18s ease;
+
+}
+
+
+/* =========================================================
+   EDITAR
+   ========================================================= */
+
+.tabla-panel td button:first-child {
+
+    background: #f3f0eb;
+
+    border: 1px solid #ded8d0;
+
+    color: #5f5952;
+
+}
+
+
+.tabla-panel td button:first-child:hover {
+
+    background: #e8e3dc;
+
+    border-color: #d0c8bf;
+
+    color: #302e2b;
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================================
+   ELIMINAR
+   ========================================================= */
+
+.tabla-panel td button:last-child {
+
+    background: var(--rojo-suave);
+
+    border: 1px solid #ead0cc;
+
+    color: var(--rojo);
+
+}
+
+
+.tabla-panel td button:last-child:hover {
+
+    background: var(--rojo);
+
+    border-color: var(--rojo);
+
+    color: #ffffff;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 10px rgba(166,61,50,.13);
+
+}
+
+
+/* =========================================================
+   SELECT DE ESTADO EN LA TABLA
+   ========================================================= */
+
+.tabla-panel td select {
+
+    height: 31px;
+
+    padding: 0 8px;
+
+    border: 1px solid #ded8d0;
+
+    border-radius: 6px;
+
+    background: #f8f6f3;
+
+    color: #5f5952;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    outline: none;
+
+}
+
+
+.tabla-panel td select:focus {
+
+    border-color: #b65c54;
+
+    box-shadow:
+        0 0 0 3px rgba(166,61,50,.07);
+
+}
+
+
+/* =========================================================
+   ICONOS DE LA TABLA
+   ========================================================= */
+
+.tabla-panel td button i {
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   PIE DE PÁGINA
+   ========================================================= */
+
+.modulo-footer {
+
+    min-height: 55px;
+
+    width: 100%;
+
+    padding: 0 45px;
+
+    background: var(--oscuro);
+
+    border-top: 1px solid rgba(255,255,255,.04);
+
+    color: #918a83;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    flex-shrink: 0;
+
+    font-size: 10px;
+
+}
+
+
+.footer-operacion {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+
+/* =========================================================
+   SCROLL
+   ========================================================= */
+
+::-webkit-scrollbar {
+
+    width: 8px;
+
+    height: 8px;
+
+}
+
+
+::-webkit-scrollbar-track {
+
+    background: #eeeae4;
+
+}
+
+
+::-webkit-scrollbar-thumb {
+
+    background: #c5bdb4;
+
+    border-radius: 10px;
+
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+
+    background: #aaa198;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+    .entrega-layout {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .entrega-formulario {
+
+        border-right: none;
+
+        border-bottom: 1px solid #eeeae5;
+
+    }
+
+
+    .entrega-mapa {
+
+        width: 100%;
+
+    }
+
+
+    .mapa-entrega {
+
+        height: 380px;
+
+        min-height: 380px;
+
+    }
+
+}
+
+
+@media (max-width: 850px) {
+
+    .modulo-header {
+
+        padding: 0 25px;
+
+    }
+
+
+    .modulo-container {
+
+        width: calc(100% - 40px);
+
+    }
+
+
+    .intro-marca {
+
+        margin-right: 10px;
+
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .modulo-header {
+
+        height: 68px;
+
+        padding: 0 18px;
+
+    }
+
+
+    .modulo-header h1 {
+
+        font-size: 18px;
+
+    }
+
+
+    .header-status {
+
+        display: none;
+
+    }
+
+
+    .modulo-container {
+
+        width: calc(100% - 24px);
+
+        padding-top: 91px;
+
+        padding-bottom: 30px;
+
+    }
+
+
+    .modulo-intro {
+
+        padding: 24px;
+
+        min-height: 140px;
+
+    }
+
+
+    .modulo-intro h2 {
+
+        font-size: 23px;
+
+    }
+
+
+    .modulo-intro p {
+
+        font-size: 12px;
+
+    }
+
+
+    .intro-marca {
+
+        display: none;
+
+    }
+
+
+    .form-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .campo-completo {
+
+        grid-column: auto;
+
+    }
+
+
+    .form-footer {
+
+        align-items: stretch;
+
+        flex-direction: column;
+
+        gap: 16px;
+
+    }
+
+
+    .boton-principal {
+
+        width: 100%;
+
+    }
+
+
+    .ruta-informacion {
+
+        grid-template-columns: 1fr 1fr;
+
+    }
+
+
+    .mapa-entrega {
+
+        height: 330px;
+
+        min-height: 330px;
+
+    }
+
+
+    .modulo-footer {
+
+        padding: 14px 18px;
+
+        min-height: auto;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 8px;
+
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    .modulo-identidad {
+
+        gap: 9px;
+
+    }
+
+
+    .modulo-icono {
+
+        width: 35px;
+
+        height: 35px;
+
+    }
+
+
+    .modulo-icono i {
+
+        font-size: 16px;
+
+    }
+
+
+    .modulo-seccion {
+
+        font-size: 8px;
+
+    }
+
+
+    .modulo-header h1 {
+
+        font-size: 16px;
+
+    }
+
+
+    .panel-header {
+
+        padding: 14px 17px;
+
+    }
+
+
+    .entrega-formulario {
+
+        padding: 20px 17px;
+
+    }
+
+
+    .ruta-informacion {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .mapa-entrega {
+
+        height: 300px;
+
+        min-height: 300px;
+
+    }
+
+}
+
+
+/* =========================================================
+   BOTONES DE TABLA
+   ========================================================= */
+
+.tabla-panel td:last-child {
+
+    white-space: nowrap;
+
+}
+
+
+/* botón general */
+
+.tabla-panel td button {
+
+    height: 31px;
+
+    padding: 0 11px;
+
+    margin-right: 4px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 10px;
+
+    font-weight: 650;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    transition:
+        background .18s ease,
+        border-color .18s ease,
+        color .18s ease,
+        transform .18s ease,
+        box-shadow .18s ease;
+
+}
+
+
+/* =========================================================
+   EDITAR
+   ========================================================= */
+
+.tabla-panel td button:first-child {
+
+    background: #f3f0eb;
+
+    border: 1px solid #ded8d0;
+
+    color: #5f5952;
+
+}
+
+
+.tabla-panel td button:first-child:hover {
+
+    background: #e8e3dc;
+
+    border-color: #d0c8bf;
+
+    color: #302e2b;
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================================
+   ELIMINAR
+   ========================================================= */
+
+.tabla-panel td button:last-child {
+
+    background: var(--rojo-suave);
+
+    border: 1px solid #ead0cc;
+
+    color: var(--rojo);
+
+}
+
+
+.tabla-panel td button:last-child:hover {
+
+    background: var(--rojo);
+
+    border-color: var(--rojo);
+
+    color: #ffffff;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 10px rgba(166,61,50,.13);
+
+}
+
+
+/* =========================================================
+   ICONOS DE ACCIONES
+   ========================================================= */
+
+.tabla-panel td button i {
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   PIE DE PÁGINA
+   ========================================================= */
+
+.modulo-footer {
+
+    min-height: 55px;
+
+    width: 100%;
+
+    padding: 0 45px;
+
+    background: var(--oscuro);
+
+    border-top: 1px solid rgba(255,255,255,.04);
+
+    color: #918a83;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    flex-shrink: 0;
+
+    font-size: 10px;
+
+}
+
+
+.footer-operacion {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+
+/* =========================================================
+   SCROLL
+   ========================================================= */
+
+::-webkit-scrollbar {
+
+    width: 8px;
+
+    height: 8px;
+
+}
+
+
+::-webkit-scrollbar-track {
+
+    background: #eeeae4;
+
+}
+
+
+::-webkit-scrollbar-thumb {
+
+    background: #c5bdb4;
+
+    border-radius: 10px;
+
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+
+    background: #aaa198;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+    .modulo-header {
+
+        padding: 0 25px;
+
+    }
+
+
+    .modulo-container {
+
+        width: calc(100% - 40px);
+
+    }
+
+
+    .intro-marca {
+
+        margin-right: 10px;
+
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .modulo-header {
+
+        height: 68px;
+
+        padding: 0 18px;
+
+    }
+
+
+    .modulo-header h1 {
+
+        font-size: 18px;
+
+    }
+
+
+    .header-status {
+
+        display: none;
+
+    }
+
+
+    .modulo-container {
+
+        width: calc(100% - 24px);
+
+        padding-top: 91px;
+
+        padding-bottom: 30px;
+
+    }
+
+
+    .modulo-intro {
+
+        padding: 24px;
+
+        min-height: 140px;
+
+    }
+
+
+    .modulo-intro h2 {
+
+        font-size: 23px;
+
+    }
+
+
+    .modulo-intro p {
+
+        font-size: 12px;
+
+    }
+
+
+    .intro-marca {
+
+        display: none;
+
+    }
+
+
+    .form-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .campo-completo {
+
+        grid-column: auto;
+
+    }
+
+
+    .form-footer {
+
+        align-items: stretch;
+
+        flex-direction: column;
+
+        gap: 16px;
+
+    }
+
+
+    .boton-principal {
+
+        width: 100%;
+
+    }
+
+
+    .modulo-footer {
+
+        padding: 14px 18px;
+
+        min-height: auto;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 8px;
+
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    .modulo-identidad {
+
+        gap: 9px;
+
+    }
+
+
+    .modulo-icono {
+
+        width: 35px;
+
+        height: 35px;
+
+    }
+
+
+    .modulo-icono i {
+
+        font-size: 16px;
+
+    }
+
+
+    .modulo-seccion {
+
+        font-size: 8px;
+
+    }
+
+
+    .modulo-header h1 {
+
+        font-size: 16px;
+
+    }
+
+
+    .panel-header {
+
+        padding: 14px 17px;
+
+    }
+
+
+    .formulario-panel form {
+
+        padding: 20px 17px;
+
+    }
+
+}
+
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+
+:root {
+    --verde-profundo: #173f35;
+    --verde: #286653;
+    --verde-suave: #e9f1ed;
+
+    --rojo: #c83b32;
+    --rojo-suave: #f8e9e7;
+
+    --amarillo: #f4c542;
+    --amarillo-suave: #fff6d9;
+
+    --crema: #faf8f3;
+    --blanco: #ffffff;
+
+    --texto: #24322e;
+    --texto-suave: #71807b;
+
+    --borde: #e4e8e5;
+
+    --sombra: 0 12px 35px rgba(35, 55, 48, 0.08);
+}
+
+
+/* ================================
+   RESET
+================================ */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(
+            circle at 90% 5%,
+            rgba(244, 197, 66, 0.10),
+            transparent 25%
+        ),
+        var(--crema);
+
+    color: var(--texto);
+
+    font-family: "DM Sans", sans-serif;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* ================================
+   ENCABEZADO
+================================ */
+
+.encabezado {
+    height: 76px;
+    width: 100%;
+
+    background: rgba(255, 255, 255, 0.96);
+
+    border-bottom: 1px solid var(--borde);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 42px;
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    backdrop-filter: blur(10px);
+}
+
+
+/* Marca */
+
+.marca {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.marca-icono {
+    width: 40px;
+    height: 40px;
+
+    border-radius: 11px;
+
+    background: var(--verde-profundo);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+}
+
+.marca-icono::before {
+    content: "";
+
+    width: 17px;
+    height: 17px;
+
+    border: 2px solid var(--amarillo);
+
+    border-radius: 50%;
+
+    position: absolute;
+}
+
+.marca-icono::after {
+    content: "";
+
+    width: 6px;
+    height: 6px;
+
+    background: var(--amarillo);
+
+    border-radius: 50%;
+
+    position: absolute;
+}
+
+
+.marca-texto h1 {
+    font-family: "Manrope", sans-serif;
+
+    font-size: 18px;
+    font-weight: 800;
+
+    letter-spacing: -0.4px;
+
+    color: var(--verde-profundo);
+}
+
+.marca-texto span {
+    display: block;
+
+    margin-top: 1px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    letter-spacing: 1.2px;
+
+    text-transform: uppercase;
+
+    color: var(--texto-suave);
+}
+
+
+.seccion-actual {
+    font-size: 13px;
+    font-weight: 600;
+
+    color: var(--verde);
+
+    padding: 8px 15px;
+
+    border-left: 2px solid var(--amarillo);
+}
+
+
+/* ================================
+   CONTENIDO PRINCIPAL
+================================ */
+
+.contenido-principal {
+    width: min(1180px, calc(100% - 60px));
+
+    margin: 0 auto;
+
+    padding: 46px 0 60px;
+
+    flex: 1;
+}
+
+
+/* ================================
+   CABECERA DE SECCIÓN
+================================ */
+
+.cabecera-seccion {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-end;
+
+    margin-bottom: 30px;
+}
+
+
+.etiqueta-seccion {
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 2px;
+
+    color: var(--rojo);
+}
+
+
+.cabecera-seccion h2 {
+    margin-top: 7px;
+
+    font-family: "Manrope", sans-serif;
+
+    font-size: 32px;
+    font-weight: 800;
+
+    letter-spacing: -1.2px;
+
+    color: var(--verde-profundo);
+}
+
+
+.cabecera-seccion p {
+    margin-top: 8px;
+
+    max-width: 600px;
+
+    font-size: 14px;
+    line-height: 1.6;
+
+    color: var(--texto-suave);
+}
+
+
+.indicador-catalogo {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    color: var(--texto-suave);
+}
+
+
+.indicador-punto {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #5c9c77;
+
+    box-shadow:
+        0 0 0 4px rgba(92, 156, 119, 0.12);
+}
+
+
+/* ================================
+   PANELES
+================================ */
+
+.panel {
+    background: var(--blanco);
+
+    border: 1px solid var(--borde);
+
+    border-radius: 18px;
+
+    box-shadow: var(--sombra);
+
+    margin-bottom: 26px;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+.panel:hover {
+    box-shadow:
+        0 16px 40px rgba(35, 55, 48, 0.11);
+}
+
+
+/* ================================
+   CABECERA DEL PANEL
+================================ */
+
+.panel-cabecera {
+    min-height: 78px;
+
+    padding: 18px 25px;
+
+    border-bottom: 1px solid var(--borde);
+
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.panel-titulo {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+}
+
+
+.titulo-linea {
+    width: 4px;
+    height: 38px;
+
+    background: var(--amarillo);
+
+    border-radius: 5px;
+}
+
+
+.panel-titulo h3 {
+    font-family: "Manrope", sans-serif;
+
+    font-size: 16px;
+    font-weight: 800;
+
+    color: var(--verde-profundo);
+}
+
+
+.panel-titulo p {
+    margin-top: 3px;
+
+    font-size: 12px;
+
+    color: var(--texto-suave);
+}
+
+
+.panel-numero {
+    font-family: "Manrope", sans-serif;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    color: #b7c1bd;
+}
+
+
+/* ================================
+   FORMULARIO
+================================ */
+
+.formulario {
+    padding: 27px 25px 30px;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 21px 24px;
+}
+
+
+.campo {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.campo-amplio {
+    grid-column: span 2;
+}
+
+
+.campo label {
+    font-size: 12px;
+    font-weight: 700;
+
+    color: var(--texto);
+}
+
+
+.campo input {
+    width: 100%;
+    height: 45px;
+
+    border: 1px solid var(--borde);
+
+    border-radius: 9px;
+
+    padding: 0 14px;
+
+    background: #fcfcfb;
+
+    color: var(--texto);
+
+    font-family: "DM Sans", sans-serif;
+
+    font-size: 13px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.campo input:hover {
+    background: #ffffff;
+
+    border-color: #cbd5d0;
+}
+
+
+.campo input:focus {
+    background: #ffffff;
+
+    border-color: var(--verde);
+
+    box-shadow:
+        0 0 0 3px rgba(40, 102, 83, 0.09);
+}
+
+
+.campo input::placeholder {
+    color: #aab4b0;
+}
+
+
+/* ================================
+   INPUT MONEDA
+================================ */
+
+.input-moneda {
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+
+    border: 1px solid var(--borde);
+
+    border-radius: 9px;
+
+    background: #fcfcfb;
+
+    overflow: hidden;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.input-moneda:focus-within {
+    background: #ffffff;
+
+    border-color: var(--verde);
+
+    box-shadow:
+        0 0 0 3px rgba(40, 102, 83, 0.09);
+}
+
+
+.input-moneda span {
+    height: 100%;
+
+    min-width: 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--verde-suave);
+
+    color: var(--verde);
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+
+.input-moneda input {
+    border: 0;
+
+    box-shadow: none;
+
+    background: transparent;
+}
+
+
+.input-moneda input:focus {
+    box-shadow: none;
+}
+
+
+/* ================================
+   ACCIONES
+================================ */
+
+.formulario-acciones {
+    grid-column: span 2;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    padding-top: 5px;
+}
+
+
+/* ================================
+   BOTONES
+================================ */
+
+.boton {
+    min-height: 42px;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    padding: 0 22px;
+
+    font-family: "DM Sans", sans-serif;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.boton-principal {
+    background: var(--verde-profundo);
+
+    color: #ffffff;
+
+    box-shadow:
+        0 5px 14px rgba(23, 63, 53, 0.16);
+}
+
+
+.boton-principal:hover {
+    background: var(--verde);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 18px rgba(23, 63, 53, 0.20);
+}
+
+
+.boton-principal:active {
+    transform: translateY(0);
+}
+
+
+/* ================================
+   TABLA
+================================ */
+
+.panel-tabla {
+    margin-bottom: 0;
+}
+
+
+.tabla-contenedor {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 760px;
+}
+
+
+thead {
+    background: #f5f7f5;
+}
+
+
+th {
+    height: 48px;
+
+    padding: 0 20px;
+
+    text-align: left;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.8px;
+
+    color: #687872;
+
+    border-bottom: 1px solid var(--borde);
+}
+
+
+td {
+    height: 58px;
+
+    padding: 10px 20px;
+
+    font-size: 13px;
+
+    color: var(--texto);
+
+    border-bottom: 1px solid #edf0ee;
+}
+
+
+tbody tr {
+    transition: background 0.18s ease;
+}
+
+
+tbody tr:hover {
+    background: #fafcfb;
+}
+
+
+tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+
+/* ================================
+   BOTÓN EDITAR
+================================ */
+
+.btn-editar,
+.boton-editar,
+button[onclick*="editar"],
+button[onclick*="Editar"] {
+
+    background: var(--amarillo-suave);
+
+    color: #806617;
+
+    border: 1px solid #f1df9f;
+
+    border-radius: 7px;
+
+    padding: 7px 12px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    margin-right: 5px;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.btn-editar:hover,
+.boton-editar:hover,
+button[onclick*="editar"]:hover,
+button[onclick*="Editar"]:hover {
+
+    background: #f9e9ad;
+
+    transform: translateY(-1px);
+}
+
+
+/* ================================
+   BOTÓN ELIMINAR
+================================ */
+
+.btn-eliminar,
+.boton-eliminar,
+button[onclick*="eliminar"],
+button[onclick*="Eliminar"] {
+
+    background: var(--rojo-suave);
+
+    color: var(--rojo);
+
+    border: 1px solid #efd0cc;
+
+    border-radius: 7px;
+
+    padding: 7px 12px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.btn-eliminar:hover,
+.boton-eliminar:hover,
+button[onclick*="eliminar"]:hover,
+button[onclick*="Eliminar"]:hover {
+
+    background: #f3d8d5;
+
+    transform: translateY(-1px);
+}
+
+
+/* ================================
+   PIE DE PÁGINA
+================================ */
+
+.pie-pagina {
+    min-height: 58px;
+
+    width: 100%;
+
+    border-top: 1px solid var(--borde);
+
+    background: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 42px;
+
+    color: var(--texto-suave);
+
+    font-size: 11px;
+}
+
+
+.pie-pagina span:first-child {
+    font-weight: 700;
+
+    color: var(--verde);
+}
+
+
+.pie-pagina span:last-child {
+    color: #9aa6a1;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 800px) {
+
+    .encabezado {
+        padding: 0 20px;
+    }
+
+    .seccion-actual {
+        display: none;
+    }
+
+    .contenido-principal {
+        width: calc(100% - 30px);
+
+        padding-top: 32px;
+    }
+
+    .cabecera-seccion {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 18px;
+    }
+
+    .cabecera-seccion h2 {
+        font-size: 27px;
+    }
+
+    .formulario {
+        grid-template-columns: 1fr;
+    }
+
+    .campo-amplio {
+        grid-column: span 1;
+    }
+
+    .formulario-acciones {
+        grid-column: span 1;
+
+        justify-content: stretch;
+    }
+
+    .boton-principal {
+        width: 100%;
+    }
+
+    .pie-pagina {
+        padding: 0 20px;
+    }
+}
+
+
+@media (max-width: 500px) {
+
+    .marca-texto h1 {
+        font-size: 16px;
+    }
+
+    .marca-texto span {
+        font-size: 9px;
+    }
+
+    .marca-icono {
+        width: 36px;
+        height: 36px;
+    }
+
+    .panel-cabecera {
+        padding: 16px 18px;
+    }
+
+    .formulario {
+        padding: 22px 18px 25px;
+    }
+
+    .cabecera-seccion h2 {
+        font-size: 24px;
+    }
+}
+
+/* =========================================================
+   SISTEMA DE GESTIÓN DE ENTREGAS
+   ESTILO GENERAL - MÓDULO PRODUCTOS
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap');
+
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+:root {
+
+    --rojo: #a63d32;
+    --rojo-oscuro: #873129;
+    --rojo-suave: #f5e8e5;
+
+    --amarillo: #d5a83c;
+    --amarillo-suave: #f6f0df;
+
+    --crema: #f4f1eb;
+    --blanco: #ffffff;
+
+    --texto: #302e2b;
+    --texto-secundario: #716b64;
+    --texto-suave: #9a938b;
+
+    --borde: #e3ded6;
+    --fondo-input: #fcfbf9;
+
+    --oscuro: #292725;
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+
+/* =========================================================
+   CUERPO
+   ========================================================= */
+
+.modulo-body {
+
+    min-height: 100vh;
+
+    background: var(--crema);
+
+    color: var(--texto);
+
+    font-family:
+        "DM Sans",
+        Arial,
+        sans-serif;
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+/* =========================================================
+   ENCABEZADO FIJO
+   ========================================================= */
+
+.modulo-header {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 76px;
+
+    padding: 0 45px;
+
+    background: var(--oscuro);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    z-index: 1000;
+
+    box-shadow:
+        0 3px 14px rgba(0, 0, 0, 0.12);
+}
+
+
+/* =========================================================
+   IDENTIDAD
+   ========================================================= */
+
+.modulo-identidad {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+}
+
+
+.volver-menu {
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    color: #c8c2ba;
+
+    text-decoration: none;
+
+    transition:
+        background .2s ease,
+        color .2s ease;
+}
+
+
+.volver-menu:hover {
+
+    background: rgba(255,255,255,0.08);
+
+    color: #ffffff;
+}
+
+
+.volver-menu i {
+
+    font-size: 17px;
+}
+
+
+.modulo-icono {
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 10px;
+
+    background: var(--rojo);
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+
+.modulo-icono i {
+
+    font-size: 19px;
+}
+
+
+.modulo-seccion {
+
+    display: block;
+
+    color: #aaa39b;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    line-height: 1;
+
+    margin-bottom: 5px;
+}
+
+
+.modulo-header h1 {
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    font-size: 21px;
+
+    font-weight: 600;
+
+    line-height: 1;
+}
+
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+
+.header-status {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #aaa39b;
+
+    font-size: 10px;
+
+    font-weight: 500;
+}
+
+
+.status-dot {
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #7ca66a;
+
+    display: inline-block;
+
+    box-shadow:
+        0 0 0 3px rgba(124,166,106,.10);
+}
+
+
+/* =========================================================
+   CONTENEDOR
+   ========================================================= */
+
+.modulo-container {
+
+    width: min(1180px, calc(100% - 70px));
+
+    margin: 0 auto;
+
+    padding-top: 111px;
+
+    padding-bottom: 45px;
+
+    flex: 1;
+}
+
+
+/* =========================================================
+   INTRODUCCIÓN
+   ========================================================= */
+
+.modulo-intro {
+
+    min-height: 154px;
+
+    padding: 29px 34px;
+
+    background: var(--blanco);
+
+    border: 1px solid var(--borde);
+
+    border-radius: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    position: relative;
+
+    overflow: hidden;
+
+    margin-bottom: 25px;
+}
+
+
+.modulo-intro::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 6px;
+    height: 100%;
+
+    background: var(--rojo);
+}
+
+
+.modulo-intro::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 210px;
+    height: 210px;
+
+    right: -85px;
+    bottom: -125px;
+
+    border-radius: 50%;
+
+    border: 38px solid var(--amarillo-suave);
+}
+
+
+/* =========================================================
+   TEXTO INTRO
+   ========================================================= */
+
+.intro-label {
+
+    color: var(--rojo);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+}
+
+
+.modulo-intro h2 {
+
+    margin: 8px 0 7px;
+
+    color: var(--texto);
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    font-size: 27px;
+
+    font-weight: 700;
+
+    letter-spacing: -.5px;
+}
+
+
+.modulo-intro p {
+
+    margin: 0;
+
+    max-width: 680px;
+
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   MARCA INTRO
+   ========================================================= */
+
+.intro-marca {
+
+    width: 86px;
+    height: 86px;
+
+    margin-right: 35px;
+
+    border-radius: 50%;
+
+    background: var(--amarillo-suave);
+
+    color: var(--rojo);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+
+.intro-marca i {
+
+    font-size: 35px;
+}
+
+
+/* =========================================================
+   PANELES
+   ========================================================= */
+
+.panel {
+
+    background: var(--blanco);
+
+    border: 1px solid var(--borde);
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 3px 15px rgba(40,35,30,.035);
+}
+
+
+/* =========================================================
+   CABECERA DEL PANEL
+   ========================================================= */
+
+.panel-header {
+
+    min-height: 72px;
+
+    padding: 15px 25px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border-bottom: 1px solid #eeeae4;
+}
+
+
+.panel-titulo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+}
+
+
+.panel-icono {
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 9px;
+
+    background: var(--rojo-suave);
+
+    color: var(--rojo);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+
+.panel-icono i {
+
+    font-size: 17px;
+}
+
+
+.panel-icono-amarillo {
+
+    background: var(--amarillo-suave);
+
+    color: #866b23;
+}
+
+
+.panel-titulo span {
+
+    display: block;
+
+    color: var(--texto-suave);
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.3px;
+
+    margin-bottom: 3px;
+}
+
+
+.panel-titulo h3 {
+
+    margin: 0;
+
+    color: var(--texto);
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    font-size: 16px;
+
+    font-weight: 700;
+}
+
+
+.panel-numero {
+
+    color: #c1bbb3;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   FORMULARIO
+   ========================================================= */
+
+.formulario-panel form {
+
+    padding: 27px 25px 24px;
+}
+
+
+.form-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    column-gap: 25px;
+
+    row-gap: 19px;
+}
+
+
+.campo {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.campo-completo {
+
+    grid-column: 1 / -1;
+}
+
+
+.campo label {
+
+    color: #57514b;
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.input-contenedor {
+
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    background: var(--fondo-input);
+
+    border: 1px solid #dcd6ce;
+
+    border-radius: 8px;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.input-contenedor i {
+
+    width: 41px;
+
+    text-align: center;
+
+    color: #aaa39b;
+
+    font-size: 14px;
+
+    transition: color .2s ease;
+}
+
+
+.input-contenedor input {
+
+    width: 100%;
+    height: 100%;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    padding: 0 12px 0 0;
+
+    color: var(--texto);
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 12px;
+}
+
+
+.input-contenedor input::placeholder {
+
+    color: #b4aea7;
+}
+
+
+.input-contenedor:focus-within {
+
+    background: #ffffff;
+
+    border-color: #b65c54;
+
+    box-shadow:
+        0 0 0 3px rgba(166,61,50,.07);
+}
+
+
+.input-contenedor:focus-within i {
+
+    color: var(--rojo);
+}
+
+
+/* =========================================================
+   PIE DEL FORMULARIO
+   ========================================================= */
+
+.form-footer {
+
+    margin-top: 26px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #eeeae5;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+}
+
+
+.form-ayuda {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #9a938c;
+
+    font-size: 10px;
+}
+
+
+.form-ayuda i {
+
+    color: #aaa29a;
+}
+
+
+/* =========================================================
+   BOTÓN PRINCIPAL
+   ========================================================= */
+
+.boton {
+
+    border: none;
+
+    outline: none;
+
+    cursor: pointer;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+}
+
+
+.boton-principal {
+
+    min-height: 42px;
+
+    padding: 0 19px;
+
+    border-radius: 8px;
+
+    background: var(--rojo);
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    font-size: 11px;
+
+    font-weight: 650;
+
+    transition:
+        background .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.boton-principal:hover {
+
+    background: var(--rojo-oscuro);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 14px rgba(135,49,41,.16);
+}
+
+
+.boton-principal:active {
+
+    transform: translateY(0);
+}
+
+
+.boton-principal i {
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+
+.tabla-contenedor {
+
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+.tabla-panel table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+
+.tabla-panel thead {
+
+    background: #f8f6f3;
+}
+
+
+.tabla-panel th {
+
+    height: 44px;
+
+    padding: 0 17px;
+
+    border-bottom: 1px solid #e4dfd8;
+
+    color: #78716a;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+    font-size: 8.5px;
+
+    font-weight: 750;
+
+    letter-spacing: .85px;
+
+    text-transform: uppercase;
+}
+
+
+.tabla-panel td {
+
+    height: 55px;
+
+    padding: 8px 17px;
+
+    border-bottom: 1px solid #eeeae5;
+
+    color: #514c47;
+
+    font-size: 11.5px;
+
+    vertical-align: middle;
+}
+
+
+.tabla-panel tbody tr {
+
+    transition:
+        background .15s ease;
+}
+
+
+.tabla-panel tbody tr:hover {
+
+    background: #fcfaf7;
+}
+
+
+.tabla-panel tbody tr:last-child td {
+
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   ID
+   ========================================================= */
+
+.tabla-panel td:first-child {
+
+    color: var(--rojo);
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   ACCIONES
+   ========================================================= */
+
+.tabla-panel td:last-child {
+
+    white-space: nowrap;
+}
+
+
+.tabla-panel td button {
+
+    height: 31px;
+
+    padding: 0 11px;
+
+    margin-right: 4px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 10px;
+
+    font-weight: 650;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    transition:
+        background .18s ease,
+        border-color .18s ease,
+        color .18s ease,
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+
+/* =========================================================
+   EDITAR
+   ========================================================= */
+
+.tabla-panel td button:first-child {
+
+    background: #f3f0eb;
+
+    border: 1px solid #ded8d0;
+
+    color: #5f5952;
+}
+
+
+.tabla-panel td button:first-child:hover {
+
+    background: #e8e3dc;
+
+    border-color: #d0c8bf;
+
+    color: #302e2b;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   ELIMINAR
+   ========================================================= */
+
+.tabla-panel td button:last-child {
+
+    background: var(--rojo-suave);
+
+    border: 1px solid #ead0cc;
+
+    color: var(--rojo);
+}
+
+
+.tabla-panel td button:last-child:hover {
+
+    background: var(--rojo);
+
+    border-color: var(--rojo);
+
+    color: #ffffff;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 10px rgba(166,61,50,.13);
+}
+
+
+/* =========================================================
+   ICONOS
+   ========================================================= */
+
+.tabla-panel td button i {
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   PIE DE PÁGINA FIJO AL FINAL
+   ========================================================= */
+
+.modulo-footer {
+
+    min-height: 55px;
+
+    width: 100%;
+
+    padding: 0 45px;
+
+    background: var(--oscuro);
+
+    border-top: 1px solid rgba(255,255,255,.04);
+
+    color: #918a83;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    flex-shrink: 0;
+
+    font-size: 10px;
+}
+
+
+.footer-operacion {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   SCROLL
+   ========================================================= */
+
+::-webkit-scrollbar {
+
+    width: 8px;
+    height: 8px;
+}
+
+
+::-webkit-scrollbar-track {
+
+    background: #eeeae4;
+}
+
+
+::-webkit-scrollbar-thumb {
+
+    background: #c5bdb4;
+
+    border-radius: 10px;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+
+    background: #aaa198;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+    .modulo-header {
+
+        padding: 0 25px;
+    }
+
+
+    .modulo-container {
+
+        width: calc(100% - 40px);
+    }
+
+
+    .intro-marca {
+
+        margin-right: 10px;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .modulo-header {
+
+        height: 68px;
+
+        padding: 0 18px;
+    }
+
+
+    .modulo-header h1 {
+
+        font-size: 18px;
+    }
+
+
+    .header-status {
+
+        display: none;
+    }
+
+
+    .modulo-container {
+
+        width: calc(100% - 24px);
+
+        padding-top: 91px;
+
+        padding-bottom: 30px;
+    }
+
+
+    .modulo-intro {
+
+        padding: 24px;
+
+        min-height: 140px;
+    }
+
+
+    .modulo-intro h2 {
+
+        font-size: 23px;
+    }
+
+
+    .modulo-intro p {
+
+        font-size: 12px;
+    }
+
+
+    .intro-marca {
+
+        display: none;
+    }
+
+
+    .form-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    .campo-completo {
+
+        grid-column: auto;
+    }
+
+
+    .form-footer {
+
+        align-items: stretch;
+
+        flex-direction: column;
+
+        gap: 16px;
+    }
+
+
+    .boton-principal {
+
+        width: 100%;
+    }
+
+
+    .modulo-footer {
+
+        padding: 14px 18px;
+
+        min-height: auto;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 8px;
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    .modulo-identidad {
+
+        gap: 9px;
+    }
+
+
+    .modulo-icono {
+
+        width: 35px;
+        height: 35px;
+    }
+
+
+    .modulo-icono i {
+
+        font-size: 16px;
+    }
+
+
+    .modulo-seccion {
+
+        font-size: 8px;
+    }
+
+
+    .modulo-header h1 {
+
+        font-size: 16px;
+    }
+
+
+    .panel-header {
+
+        padding: 14px 17px;
+    }
+
+
+    .formulario-panel form {
+
+        padding: 20px 17px;
+    }
+
+}
+
+/* =========================================================
+   SISTEMA DE GESTIÓN DE ENTREGAS
+   ESTILO GENERAL - MÓDULO PEDIDOS
+   ========================================================= */
+
+
+/* =========================================================
+   FUENTES
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+:root {
+
+    --rojo: #a63d32;
+
+    --rojo-oscuro: #873129;
+
+    --rojo-suave: #f5e8e5;
+
+    --amarillo: #d5a83c;
+
+    --amarillo-suave: #f6f0df;
+
+    --crema: #f4f1eb;
+
+    --blanco: #ffffff;
+
+    --texto: #302e2b;
+
+    --texto-secundario: #716b64;
+
+    --texto-suave: #9a938b;
+
+    --borde: #e3ded6;
+
+    --fondo-input: #fcfbf9;
+
+    --oscuro: #292725;
+
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+
+    box-sizing: border-box;
+
+}
+
+
+html {
+
+    margin: 0;
+
+    padding: 0;
+
+    scroll-behavior: smooth;
+
+}
+
+
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+}
+
+
+/* =========================================================
+   CUERPO DEL MÓDULO
+   ========================================================= */
+
+.modulo-body {
+
+    min-height: 100vh;
+
+    background: var(--crema);
+
+    color: var(--texto);
+
+    font-family:
+        "DM Sans",
+        Arial,
+        sans-serif;
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+.modulo-header {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 76px;
+
+    padding: 0 45px;
+
+    background: var(--oscuro);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    z-index: 1000;
+
+    box-shadow:
+        0 3px 14px rgba(0, 0, 0, 0.12);
+
+}
+
+
+/* =========================================================
+   IDENTIDAD DEL MÓDULO
+   ========================================================= */
+
+.modulo-identidad {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+}
+
+
+.volver-menu {
+
+    width: 34px;
+
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    color: #c8c2ba;
+
+    text-decoration: none;
+
+    transition:
+        background .2s ease,
+        color .2s ease;
+
+}
+
+
+.volver-menu:hover {
+
+    background: rgba(255,255,255,.08);
+
+    color: #ffffff;
+
+}
+
+
+.volver-menu i {
+
+    font-size: 17px;
+
+}
+
+
+.modulo-icono {
+
+    width: 40px;
+
+    height: 40px;
+
+    border-radius: 10px;
+
+    background: var(--rojo);
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.modulo-icono i {
+
+    font-size: 19px;
+
+}
+
+
+.modulo-seccion {
+
+    display: block;
+
+    color: #aaa39b;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    line-height: 1;
+
+    margin-bottom: 5px;
+
+}
+
+
+.modulo-header h1 {
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    font-size: 21px;
+
+    font-weight: 600;
+
+    line-height: 1;
+
+}
+
+
+/* =========================================================
+   ESTADO DEL SISTEMA
+   ========================================================= */
+
+.header-status {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #aaa39b;
+
+    font-size: 10px;
+
+    font-weight: 500;
+
+}
+
+
+.status-dot {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #7ca66a;
+
+    display: inline-block;
+
+    box-shadow:
+        0 0 0 3px rgba(124,166,106,.10);
+
+}
+
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
+
+.modulo-container {
+
+    width: min(1180px, calc(100% - 70px));
+
+    margin: 0 auto;
+
+    padding-top: 111px;
+
+    padding-bottom: 45px;
+
+    flex: 1;
+
+}
+
+
+/* =========================================================
+   INTRODUCCIÓN
+   ========================================================= */
+
+.modulo-intro {
+
+    min-height: 154px;
+
+    padding: 29px 34px;
+
+    background: var(--blanco);
+
+    border: 1px solid var(--borde);
+
+    border-radius: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    position: relative;
+
+    overflow: hidden;
+
+    margin-bottom: 25px;
+
+}
+
+
+/* Línea decorativa */
+
+.modulo-intro::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    width: 6px;
+
+    height: 100%;
+
+    background: var(--rojo);
+
+}
+
+
+/* Decoración circular */
+
+.modulo-intro::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 210px;
+
+    height: 210px;
+
+    right: -85px;
+
+    bottom: -125px;
+
+    border-radius: 50%;
+
+    border: 38px solid var(--amarillo-suave);
+
+}
+
+
+/* =========================================================
+   TEXTO DE INTRODUCCIÓN
+   ========================================================= */
+
+.intro-label {
+
+    color: var(--rojo);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+}
+
+
+.modulo-intro h2 {
+
+    margin: 8px 0 7px;
+
+    color: var(--texto);
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    font-size: 27px;
+
+    font-weight: 700;
+
+    letter-spacing: -.5px;
+
+}
+
+
+.modulo-intro p {
+
+    margin: 0;
+
+    max-width: 680px;
+
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+}
+
+
+/* =========================================================
+   ICONO DECORATIVO
+   ========================================================= */
+
+.intro-marca {
+
+    width: 86px;
+
+    height: 86px;
+
+    margin-right: 35px;
+
+    border-radius: 50%;
+
+    background: var(--amarillo-suave);
+
+    color: var(--rojo);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    position: relative;
+
+    z-index: 2;
+
+}
+
+
+.intro-marca i {
+
+    font-size: 35px;
+
+}
+
+
+/* =========================================================
+   PANELES
+   ========================================================= */
+
+.panel {
+
+    background: var(--blanco);
+
+    border: 1px solid var(--borde);
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 3px 15px rgba(40,35,30,.035);
+
+}
+
+
+/* =========================================================
+   CABECERA DE PANEL
+   ========================================================= */
+
+.panel-header {
+
+    min-height: 72px;
+
+    padding: 15px 25px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border-bottom: 1px solid #eeeae4;
+
+}
+
+
+.panel-titulo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+}
+
+
+.panel-icono {
+
+    width: 38px;
+
+    height: 38px;
+
+    border-radius: 9px;
+
+    background: var(--rojo-suave);
+
+    color: var(--rojo);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.panel-icono i {
+
+    font-size: 17px;
+
+}
+
+
+.panel-icono-amarillo {
+
+    background: var(--amarillo-suave);
+
+    color: #866b23;
+
+}
+
+
+.panel-titulo span {
+
+    display: block;
+
+    color: var(--texto-suave);
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.3px;
+
+    margin-bottom: 3px;
+
+}
+
+
+.panel-titulo h3 {
+
+    margin: 0;
+
+    color: var(--texto);
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+}
+
+
+.panel-numero {
+
+    color: #c1bbb3;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+}
+
+
+/* =========================================================
+   FORMULARIO DEL PEDIDO
+   ========================================================= */
+
+.formulario-panel form {
+
+    padding: 27px 25px 24px;
+
+}
+
+
+/* =========================================================
+   GRID DEL FORMULARIO
+   ========================================================= */
+
+.form-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    column-gap: 25px;
+
+    row-gap: 19px;
+
+}
+
+
+.campo {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+}
+
+
+.campo-completo {
+
+    grid-column: 1 / -1;
+
+}
+
+
+.campo label {
+
+    color: #57514b;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   INPUTS Y SELECTS
+   ========================================================= */
+
+.input-contenedor {
+
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    background: var(--fondo-input);
+
+    border: 1px solid #dcd6ce;
+
+    border-radius: 8px;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.input-contenedor i {
+
+    width: 41px;
+
+    text-align: center;
+
+    color: #aaa39b;
+
+    font-size: 14px;
+
+    transition: color .2s ease;
+
+}
+
+
+.input-contenedor input,
+
+.input-contenedor select {
+
+    width: 100%;
+
+    height: 100%;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    padding: 0 12px 0 0;
+
+    color: var(--texto);
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 12px;
+
+}
+
+
+.input-contenedor input::placeholder {
+
+    color: #b4aea7;
+
+}
+
+
+.input-contenedor select {
+
+    cursor: pointer;
+
+    appearance: auto;
+
+}
+
+
+.input-contenedor:focus-within {
+
+    background: #ffffff;
+
+    border-color: #b65c54;
+
+    box-shadow:
+        0 0 0 3px rgba(166,61,50,.07);
+
+}
+
+
+.input-contenedor:focus-within i {
+
+    color: var(--rojo);
+
+}
+
+
+/* =========================================================
+   DETALLE DEL PEDIDO
+   ========================================================= */
+
+.detalle-pedido {
+
+    margin-top: 28px;
+
+    padding-top: 24px;
+
+    border-top: 1px solid var(--borde);
+
+}
+
+
+.subtitulo-formulario {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+
+}
+
+
+.subtitulo-formulario span {
+
+    display: block;
+
+    color: var(--texto-suave);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.4px;
+
+    margin-bottom: 4px;
+
+}
+
+
+.subtitulo-formulario h3 {
+
+    margin: 0;
+
+    color: var(--texto);
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   CONTROLES PARA AGREGAR PRODUCTOS
+   ========================================================= */
+
+.agregar-producto {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        150px
+        auto;
+
+    gap: 14px;
+
+    align-items: end;
+
+    margin-bottom: 23px;
+
+}
+
+
+.agregar-producto .campo {
+
+    min-width: 0;
+
+}
+
+
+/* =========================================================
+   BOTÓN AGREGAR PRODUCTO
+   ========================================================= */
+
+#btnAgregarProducto {
+
+    height: 44px;
+
+    padding: 0 17px;
+
+    border: 1px solid #d8d0c6;
+
+    border-radius: 8px;
+
+    background: #f3f0eb;
+
+    color: #5f5952;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 11px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        color .2s ease,
+        transform .2s ease;
+
+}
+
+
+#btnAgregarProducto:hover {
+
+    background: #e8e3dc;
+
+    border-color: #ccc3b9;
+
+    color: var(--texto);
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================================
+   TABLA DEL DETALLE
+   ========================================================= */
+
+.detalle-pedido .tabla-contenedor {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+}
+
+
+.detalle-pedido table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 620px;
+
+}
+
+
+.detalle-pedido thead {
+
+    background: #f8f6f3;
+
+}
+
+
+.detalle-pedido th {
+
+    height: 42px;
+
+    padding: 0 15px;
+
+    border-bottom: 1px solid #e4dfd8;
+
+    color: #78716a;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+    font-size: 8.5px;
+
+    font-weight: 750;
+
+    letter-spacing: .85px;
+
+    text-transform: uppercase;
+
+}
+
+
+.detalle-pedido td {
+
+    height: 51px;
+
+    padding: 8px 15px;
+
+    border-bottom: 1px solid #eeeae5;
+
+    color: #514c47;
+
+    font-size: 11.5px;
+
+    vertical-align: middle;
+
+}
+
+
+.detalle-pedido tbody tr {
+
+    transition: background .15s ease;
+
+}
+
+
+.detalle-pedido tbody tr:hover {
+
+    background: #fcfaf7;
+
+}
+
+
+.detalle-pedido tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+/* =========================================================
+   BOTÓN ELIMINAR DEL DETALLE
+   ========================================================= */
+
+#detallePedido button {
+
+    height: 29px;
+
+    padding: 0 10px;
+
+    border-radius: 6px;
+
+    background: var(--rojo-suave);
+
+    border: 1px solid #ead0cc;
+
+    color: var(--rojo);
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 10px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    transition:
+        background .18s ease,
+        border-color .18s ease,
+        color .18s ease,
+        transform .18s ease,
+        box-shadow .18s ease;
+
+}
+
+
+#detallePedido button:hover {
+
+    background: var(--rojo);
+
+    border-color: var(--rojo);
+
+    color: #ffffff;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 10px rgba(166,61,50,.13);
+
+}
+
+
+/* =========================================================
+   TOTAL DEL PEDIDO
+   ========================================================= */
+
+.total-pedido {
+
+    margin-top: 22px;
+
+    padding: 17px 20px;
+
+    border: 1px solid var(--borde);
+
+    border-radius: 9px;
+
+    background: #faf8f5;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+}
+
+
+.total-pedido > span {
+
+    color: var(--texto-suave);
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: .3px;
+
+}
+
+
+.total-pedido strong {
+
+    color: var(--texto);
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+}
+
+
+.total-pedido strong span {
+
+    color: var(--rojo);
+
+}
+
+
+/* =========================================================
+   PIE DEL FORMULARIO
+   ========================================================= */
+
+.form-footer {
+
+    margin-top: 26px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #eeeae5;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+}
+
+
+.form-ayuda {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #9a938c;
+
+    font-size: 10px;
+
+}
+
+
+.form-ayuda i {
+
+    color: #aaa29a;
+
+}
+
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+
+.boton {
+
+    border: none;
+
+    outline: none;
+
+    cursor: pointer;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+}
+
+
+.boton-principal {
+
+    min-height: 42px;
+
+    padding: 0 19px;
+
+    border-radius: 8px;
+
+    background: var(--rojo);
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    font-size: 11px;
+
+    font-weight: 650;
+
+    transition:
+        background .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.boton-principal:hover {
+
+    background: var(--rojo-oscuro);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 14px rgba(135,49,41,.16);
+
+}
+
+
+.boton-principal:active {
+
+    transform: translateY(0);
+
+}
+
+
+.boton-principal i {
+
+    font-size: 13px;
+
+}
+
+
+/* =========================================================
+   TABLA DE PEDIDOS REGISTRADOS
+   ========================================================= */
+
+.tabla-panel table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+
+.tabla-panel thead {
+
+    background: #f8f6f3;
+
+}
+
+
+.tabla-panel th {
+
+    height: 44px;
+
+    padding: 0 17px;
+
+    border-bottom: 1px solid #e4dfd8;
+
+    color: #78716a;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+    font-size: 8.5px;
+
+    font-weight: 750;
+
+    letter-spacing: .85px;
+
+    text-transform: uppercase;
+
+}
+
+
+.tabla-panel td {
+
+    height: 55px;
+
+    padding: 8px 17px;
+
+    border-bottom: 1px solid #eeeae5;
+
+    color: #514c47;
+
+    font-size: 11.5px;
+
+    vertical-align: middle;
+
+}
+
+
+.tabla-panel tbody tr {
+
+    transition:
+        background .15s ease;
+
+}
+
+
+.tabla-panel tbody tr:hover {
+
+    background: #fcfaf7;
+
+}
+
+
+.tabla-panel tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+/* =========================================================
+   ID DEL PEDIDO
+   ========================================================= */
+
+.tabla-panel td:first-child {
+
+    color: var(--rojo);
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   ESTADO DEL PEDIDO
+   ========================================================= */
+
+.estado {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 82px;
+
+    height: 27px;
+
+    padding: 0 10px;
+
+    border-radius: 20px;
+
+    background: var(--amarillo-suave);
+
+    border: 1px solid #eadcae;
+
+    color: #806a27;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+}
+
+
+/* Estados comunes */
+
+.estado.pendiente {
+
+    background: var(--amarillo-suave);
+
+    border-color: #eadcae;
+
+    color: #806a27;
+
+}
+
+
+.estado.preparando {
+
+    background: #f3f0eb;
+
+    border-color: #ddd7ce;
+
+    color: #625c55;
+
+}
+
+
+.estado.enviado,
+
+.estado.en-ruta {
+
+    background: #f0eee9;
+
+    border-color: #dad5cc;
+
+    color: #5e5952;
+
+}
+
+
+.estado.entregado {
+
+    background: #edf3e9;
+
+    border-color: #d4e3cc;
+
+    color: #58764b;
+
+}
+
+
+.estado.cancelado {
+
+    background: var(--rojo-suave);
+
+    border-color: #ead0cc;
+
+    color: var(--rojo);
+
+}
+
+
+/* =========================================================
+   PIE DE PÁGINA
+   ========================================================= */
+
+.modulo-footer {
+
+    min-height: 55px;
+
+    width: 100%;
+
+    padding: 0 45px;
+
+    background: var(--oscuro);
+
+    border-top: 1px solid rgba(255,255,255,.04);
+
+    color: #918a83;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    flex-shrink: 0;
+
+    font-size: 10px;
+
+}
+
+
+.footer-operacion {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+
+/* =========================================================
+   SCROLL
+   ========================================================= */
+
+::-webkit-scrollbar {
+
+    width: 8px;
+
+    height: 8px;
+
+}
+
+
+::-webkit-scrollbar-track {
+
+    background: #eeeae4;
+
+}
+
+
+::-webkit-scrollbar-thumb {
+
+    background: #c5bdb4;
+
+    border-radius: 10px;
+
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+
+    background: #aaa198;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+    .modulo-header {
+
+        padding: 0 25px;
+
+    }
+
+
+    .modulo-container {
+
+        width: calc(100% - 40px);
+
+    }
+
+
+    .intro-marca {
+
+        margin-right: 10px;
+
+    }
+
+
+    .agregar-producto {
+
+        grid-template-columns: 1fr 130px;
+
+    }
+
+
+    #btnAgregarProducto {
+
+        grid-column: 1 / -1;
+
+        width: 100%;
+
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .modulo-header {
+
+        height: 68px;
+
+        padding: 0 18px;
+
+    }
+
+
+    .modulo-header h1 {
+
+        font-size: 18px;
+
+    }
+
+
+    .header-status {
+
+        display: none;
+
+    }
+
+
+    .modulo-container {
+
+        width: calc(100% - 24px);
+
+        padding-top: 91px;
+
+        padding-bottom: 30px;
+
+    }
+
+
+    .modulo-intro {
+
+        padding: 24px;
+
+        min-height: 140px;
+
+    }
+
+
+    .modulo-intro h2 {
+
+        font-size: 23px;
+
+    }
+
+
+    .modulo-intro p {
+
+        font-size: 12px;
+
+    }
+
+
+    .intro-marca {
+
+        display: none;
+
+    }
+
+
+    .form-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .campo-completo {
+
+        grid-column: auto;
+
+    }
+
+
+    .agregar-producto {
+
+        grid-template-columns: 1fr;
+
+        gap: 16px;
+
+    }
+
+
+    #btnAgregarProducto {
+
+        grid-column: auto;
+
+        width: 100%;
+
+    }
+
+
+    .form-footer {
+
+        align-items: stretch;
+
+        flex-direction: column;
+
+        gap: 16px;
+
+    }
+
+
+    .boton-principal {
+
+        width: 100%;
+
+    }
+
+
+    .total-pedido {
+
+        gap: 15px;
+
+    }
+
+
+    .modulo-footer {
+
+        padding: 14px 18px;
+
+        min-height: auto;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 8px;
+
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    .modulo-identidad {
+
+        gap: 9px;
+
+    }
+
+
+    .modulo-icono {
+
+        width: 35px;
+
+        height: 35px;
+
+    }
+
+
+    .modulo-icono i {
+
+        font-size: 16px;
+
+    }
+
+
+    .modulo-seccion {
+
+        font-size: 8px;
+
+    }
+
+
+    .modulo-header h1 {
+
+        font-size: 16px;
+
+    }
+
+
+    .panel-header {
+
+        padding: 14px 17px;
+
+    }
+
+
+    .formulario-panel form {
+
+        padding: 20px 17px;
+
+    }
+
+
+    .total-pedido {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+    }
+
+}
+
+/* =========================================================
+   MÓDULO ENTREGAS
+   ========================================================= */
+
+
+/* =========================================================
+   SELECT DEL FORMULARIO
+   ========================================================= */
+
+.input-contenedor select {
+
+    width: 100%;
+
+    height: 100%;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    padding: 0 12px 0 0;
+
+    color: var(--texto);
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+}
+
+
+.input-contenedor select:focus {
+
+    outline: none;
+
+}
+
+
+.input-contenedor select option {
+
+    color: var(--texto);
+
+    background: #ffffff;
+
+}
+
+
+
+/* =========================================================
+   CAMPOS DE DESTINO
+   ========================================================= */
+
+#direccion_destino,
+#latitud_destino,
+#longitud_destino {
+
+    color: #77716a;
+
+    background: transparent;
+
+}
+
+
+#direccion_destino:read-only,
+#latitud_destino:read-only,
+#longitud_destino:read-only {
+
+    cursor: default;
+
+}
+
+
+
+/* =========================================================
+   ICONOS DE DESTINO
+   ========================================================= */
+
+.input-contenedor:has(
+    #direccion_destino
+),
+.input-contenedor:has(
+    #latitud_destino
+),
+.input-contenedor:has(
+    #longitud_destino
+) {
+
+    background: #f8f6f3;
+
+}
+
+
+
+/* =========================================================
+   CAMPOS DE DISTANCIA Y DURACIÓN
+   ========================================================= */
+
+#distancia_km,
+#duracion_min {
+
+    color: var(--texto);
+
+}
+
+
+
+/* =========================================================
+   TABLA DE ENTREGAS
+   ========================================================= */
+
+.tabla-panel table {
+
+    min-width: 950px;
+
+}
+
+
+.tabla-panel th {
+
+    white-space: nowrap;
+
+}
+
+
+.tabla-panel td {
+
+    white-space: nowrap;
+
+}
+
+
+
+/* =========================================================
+   DIRECCIÓN EN TABLA
+   ========================================================= */
+
+.tabla-panel td:nth-child(4) {
+
+    max-width: 280px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+
+/* =========================================================
+   ESTADO DE ENTREGA
+   ========================================================= */
+
+.estado-entrega {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 25px;
+
+    padding: 0 10px;
+
+    border-radius: 20px;
+
+    background: var(--amarillo-suave);
+
+    border: 1px solid #eadcae;
+
+    color: #80691f;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: .3px;
+
+}
+
+
+
+/* =========================================================
+   ESTADO COMPLETADO
+   ========================================================= */
+
+.estado-completado {
+
+    background: #edf4ee;
+
+    border-color: #d3e3d5;
+
+    color: #52755b;
+
+}
+
+
+
+/* =========================================================
+   ESTADO PENDIENTE
+   ========================================================= */
+
+.estado-pendiente {
+
+    background: var(--amarillo-suave);
+
+    border-color: #eadcae;
+
+    color: #80691f;
+
+}
+
+
+
+/* =========================================================
+   ESTADO CANCELADO
+   ========================================================= */
+
+.estado-cancelado {
+
+    background: var(--rojo-suave);
+
+    border-color: #ead0cc;
+
+    color: var(--rojo);
+
+}
+
+
+
+/* =========================================================
+   VALORES DE DISTANCIA
+   ========================================================= */
+
+.tabla-panel td:nth-child(5) {
+
+    color: #625c55;
+
+    font-weight: 600;
+
+}
+
+
+
+/* =========================================================
+   VALORES DE DURACIÓN
+   ========================================================= */
+
+.tabla-panel td:nth-child(6) {
+
+    color: #625c55;
+
+    font-weight: 600;
+
+}
+
+
+
+/* =========================================================
+   ICONO DE ESTADO
+   ========================================================= */
+
+.estado-entrega i {
+
+    margin-right: 5px;
+
+    font-size: 9px;
+
+}
+
+
+
+/* =========================================================
+   RESPONSIVE - ENTREGAS
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .tabla-panel table {
+
+        min-width: 900px;
+
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    .tabla-panel table {
+
+        min-width: 850px;
+
+    }
+
+}
+
+
+/* ==========================================
+   NOTIFICACIONES DEL SISTEMA
+   ========================================== */
+
+.notificacion-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(255, 255, 255, 0.18);
+
+    backdrop-filter: blur(4px);
+
+    -webkit-backdrop-filter: blur(4px);
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    z-index: 9999;
+
+}
+
+
+.notificacion-overlay.activa {
+
+    display: flex;
+
+}
+
+
+.notificacion {
+
+    position: relative;
+
+    width: 420px;
+
+    max-width: 90%;
+
+    padding: 32px;
+
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.94);
+
+    border: 1px solid rgba(191, 115, 150, 0.25);
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 20px 60px rgba(80, 40, 60, 0.18);
+
+    animation: aparecerNotificacion 0.25s ease;
+
+}
+
+
+.notificacion-cerrar {
+
+    position: absolute;
+
+    top: 12px;
+
+    right: 16px;
+
+    border: none;
+
+    background: transparent;
+
+    font-size: 25px;
+
+    color: #999;
+
+    cursor: pointer;
+
+}
+
+
+.notificacion-cerrar:hover {
+
+    color: #BF7396;
+
+}
+
+
+.notificacion-icono {
+
+    width: 58px;
+
+    height: 58px;
+
+    margin: 0 auto 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #FFDEE9;
+
+    color: #BF7396;
+
+    font-size: 25px;
+
+}
+
+
+.notificacion h3 {
+
+    margin: 0 0 10px;
+
+    color: #BF7396;
+
+    font-size: 22px;
+
+}
+
+
+.notificacion p {
+
+    margin: 0 0 24px;
+
+    color: #555;
+
+    line-height: 1.6;
+
+}
+
+
+@keyframes aparecerNotificacion {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(15px) scale(0.96);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0) scale(1);
+
+    }
+
+}
+
+/* ==========================================
+   NOTIFICACIONES DEL SISTEMA
+   ========================================== */
+
+.notificacion-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(255, 255, 255, 0.18);
+
+    backdrop-filter: blur(4px);
+
+    -webkit-backdrop-filter: blur(4px);
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    z-index: 9999;
+
+}
+
+
+.notificacion-overlay.activa {
+
+    display: flex;
+
+}
+
+
+.notificacion {
+
+    position: relative;
+
+    width: 420px;
+
+    max-width: 90%;
+
+    padding: 34px 30px;
+
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.96);
+
+    border: 1px solid rgba(191, 115, 150, 0.25);
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 20px 60px rgba(80, 40, 60, 0.20);
+
+    animation: aparecerNotificacion 0.25s ease;
+
+}
+
+
+.notificacion-cerrar {
+
+    position: absolute;
+
+    top: 10px;
+
+    right: 15px;
+
+    width: 34px;
+
+    height: 34px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #999;
+
+    font-size: 27px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+}
+
+
+.notificacion-cerrar:hover {
+
+    color: #BF7396;
+
+}
+
+
+.notificacion-icono {
+
+    width: 62px;
+
+    height: 62px;
+
+    margin: 0 auto 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #FFDEE9;
+
+    color: #BF7396;
+
+    font-size: 27px;
+
+}
+
+
+.notificacion h3 {
+
+    margin: 0 0 10px;
+
+    color: #BF7396;
+
+    font-size: 22px;
+
+}
+
+
+.notificacion p {
+
+    margin: 0 0 24px;
+
+    color: #555;
+
+    line-height: 1.6;
+
+}
+
+
+.notificacion-acciones {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 12px;
+
+}
+
+
+.boton-cancelar {
+
+    padding: 11px 20px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 12px;
+
+    background: #fff;
+
+    color: #666;
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+}
+
+
+.boton-cancelar:hover {
+
+    background: #f7f7f7;
+
+}
+
+
+.boton-eliminar {
+
+    padding: 11px 20px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #CB6E89;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+}
+
+
+.boton-eliminar:hover {
+
+    opacity: 0.88;
+
+}
+
+
+@keyframes aparecerNotificacion {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(15px) scale(0.96);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0) scale(1);
+
+    }
+
+}

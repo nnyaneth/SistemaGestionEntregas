@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Entregas - Sistema de Gestión de Entregas</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/estilos.css') }}"
+    >
+
+    <!-- =====================================================
+         ICONOS
+         ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- =====================================================
+         LEAFLET
+         ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+    <script src="https://unpkg.com/@mapbox/polyline@1.2.1/src/polyline.js"></script>
+
+</head>
+
+
+<body class="modulo-body">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+         ===================================================== -->
+
+    <header class="modulo-header">
+
+        <div class="modulo-identidad">
+
+            <a
+                href="/"
+                class="volver-menu"
+                title="Volver al menú"
+            >
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+            </a>
+
+
+            <div class="modulo-icono">
+
+                <i class="fa-solid fa-truck-fast"></i>
+
+            </div>
+
+
+            <div>
+
+                <span class="modulo-seccion">
+                    GESTIÓN OPERATIVA
+                </span>
+
+                <h1>
+                    Entregas
+                </h1>
+
+            </div>
+
+        </div>
+
+
+        <div class="header-status">
+
+            <span class="status-dot"></span>
+
+            Sistema operativo
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+         ===================================================== -->
+
+    <main class="modulo-container">
+
+
+        <!-- =================================================
+             INTRODUCCIÓN
+             ================================================= -->
+
+        <section class="modulo-intro">
+
+            <div>
+
+                <span class="intro-label">
+                    CONTROL DE ENTREGAS
+                </span>
+
+                <h2>
+                    Gestión de entregas
+                </h2>
+
+                <p>
+                    Registra y controla las entregas asociadas a cada
+                    pedido. Selecciona el pedido y repartidor, ingresa
+                    el destino y visualiza automáticamente la ruta.
+                </p>
+
+            </div>
+
+
+            <div class="intro-marca">
+
+                <i class="fa-solid fa-route"></i>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PANEL: REGISTRAR ENTREGA
+             ================================================= -->
+
+        <section class="panel formulario-panel">
+
+
+            <!-- =================================================
+                 CABECERA DEL PANEL
+                 ================================================= -->
+
+            <div class="panel-header">
+
+                <div class="panel-titulo">
+
+                    <div class="panel-icono">
+
+                        <i class="fa-solid fa-plus"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            NUEVO REGISTRO
+                        </span>
+
+                        <h3>
+                            Registrar entrega
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <span class="panel-numero">
+                    01
+                </span>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 CONTENEDOR DEL FORMULARIO Y MAPA
+                 ================================================= -->
+
+            <div class="entrega-layout">
+
+
+                <!-- =================================================
+                     COLUMNA IZQUIERDA
+                     FORMULARIO
+                     ================================================= -->
+
+                <div class="entrega-formulario">
+
+
+                    <form id="formularioEntrega">
+
+
+                        <!-- =================================================
+                             PEDIDO
+                             ================================================= -->
+
+                        <div class="campo">
+
+                            <label for="id_pedido">
+                                Pedido
+                            </label>
+
+                            <div class="input-contenedor">
+
+                                <i class="fa-solid fa-receipt"></i>
+
+                                <select
+                                    id="id_pedido"
+                                    name="id_pedido"
+                                    required
+                                >
+
+                                    <option value="">
+                                        Seleccione un pedido
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =================================================
+                             REPARTIDOR
+                             ================================================= -->
+
+                        <div class="campo">
+
+                            <label for="id_repartidor">
+                                Repartidor
+                            </label>
+
+                            <div class="input-contenedor">
+
+                                <i class="fa-solid fa-user-tie"></i>
+
+                                <select
+                                    id="id_repartidor"
+                                    name="id_repartidor"
+                                    required
+                                >
+
+                                    <option value="">
+                                        Seleccione un repartidor
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =================================================
+                             DIRECCIÓN DE DESTINO
+                             ================================================= -->
+
+                        <div class="campo">
+
+                            <label for="direccion_destino">
+                                Dirección de destino
+                            </label>
+
+                            <div class="input-contenedor">
+
+                                <i class="fa-solid fa-location-dot"></i>
+
+                                <input
+                                    type="text"
+                                    id="direccion_destino"
+                                    name="direccion_destino"
+                                    placeholder="Dirección del destino"
+                                    required
+                                >
+                            </div>
+
+                        <button
+                            type="button"
+                            class="boton boton-principal"
+                            onclick="calcularRutaDesdeDireccion()"
+                        >
+                            <i class="fa-solid fa-route"></i>
+                            Calcular ruta
+                        </button>
+
+                        </div>
+
+
+
+                        <!-- =================================================
+                             INFORMACIÓN AUTOMÁTICA
+                             ================================================= -->
+
+                        <div class="ruta-informacion">
+
+
+                            <div class="ruta-dato">
+
+                                <span>
+                                    <i class="fa-solid fa-road"></i>
+                                    Distancia
+                                </span>
+
+                                <strong id="distanciaMostrada">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="ruta-dato">
+
+                                <span>
+                                    <i class="fa-solid fa-clock"></i>
+                                    Duración
+                                </span>
+
+                                <strong id="duracionMostrada">
+                                    —
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =================================================
+                             CAMPOS OCULTOS
+                             SE LLENARÁN AUTOMÁTICAMENTE
+                             ================================================= -->
+
+                        <input
+                            type="hidden"
+                            id="latitud_destino"
+                            name="latitud_destino"
+                        >
+
+
+                        <input
+                            type="hidden"
+                            id="longitud_destino"
+                            name="longitud_destino"
+                        >
+
+
+                        <input
+                            type="hidden"
+                            id="distancia_km"
+                            name="distancia_km"
+                        >
+
+
+                        <input
+                            type="hidden"
+                            id="duracion_min"
+                            name="duracion_min"
+                        >
+
+
+
+                        <!-- =================================================
+                             ESTADO DE LA RUTA
+                             ================================================= -->
+
+                        <div
+                            id="estadoRuta"
+                            class="estado-ruta"
+                        >
+
+                            <i class="fa-solid fa-location-dot"></i>
+
+                            Ingrese una dirección para calcular la ruta.
+
+                        </div>
+
+                        <!-- =================================================
+                             PIE DEL FORMULARIO
+                             ================================================= -->
+
+                        <div class="form-footer">
+
+                            <div class="form-ayuda">
+
+                                <i class="fa-solid fa-circle-info"></i>
+
+                                Verifique la dirección y presione "Ver ruta" para calcular el recorrido.
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="boton boton-principal"
+                            >
+
+                                <i class="fa-solid fa-truck-fast"></i>
+
+                                Registrar entrega
+
+                            </button>
+
+                        </div>
+
+
+                    </form>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     COLUMNA DERECHA
+                     MAPA
+                     ================================================= -->
+
+                <div class="entrega-mapa">
+
+
+                    <div class="mapa-header">
+
+                        <div>
+
+                            <span>
+                                VISUALIZACIÓN DE RUTA
+                            </span>
+
+                            <h3>
+                                Ruta de entrega
+                            </h3>
+
+                        </div>
+
+
+                        <i class="fa-solid fa-map-location-dot"></i>
+
+                    </div>
+
+
+                    <div
+                        id="mapaEntrega"
+                        class="mapa-entrega"
+                    >
+                    </div>
+
+
+                    <div class="mapa-origen">
+
+                        <i class="fa-solid fa-house"></i>
+
+                        <div>
+
+                            <span>
+                                PUNTO DE ORIGEN
+                            </span>
+
+                            <strong>
+                                Jr. Hilario Cabrera 201,
+                                Cerro de Pasco 19001
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PANEL: ENTREGAS REGISTRADAS
+             ================================================= -->
+
+        <section class="panel tabla-panel">
+
+
+            <div class="panel-header">
+
+                <div class="panel-titulo">
+
+                    <div class="panel-icono panel-icono-amarillo">
+
+                        <i class="fa-solid fa-route"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            CONTROL OPERATIVO
+                        </span>
+
+                        <h3>
+                            Entregas registradas
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <span class="panel-numero">
+                    02
+                </span>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 TABLA
+                 ================================================= -->
+
+            <div class="tabla-contenedor">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Pedido</th>
+
+                            <th>Repartidor</th>
+
+                            <th>Dirección</th>
+
+                            <th>Distancia</th>
+
+                            <th>Duración</th>
+
+                            <th>Estado</th>
+
+                            <th>Acciones</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="tablaEntregas">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         PIE DE PÁGINA
+         ===================================================== -->
+
+    <footer class="modulo-footer">
+
+        <div>
+
+            Sistema de Gestión de Entregas
+
+        </div>
+
+
+        <div class="footer-operacion">
+
+            <span class="status-dot"></span>
+
+            Operación activa
+
+        </div>
+
+    </footer>
+
+<div id="notificacionSistema" class="notificacion-overlay">
+
+    <div class="notificacion">
+
+        <button
+            type="button"
+            class="notificacion-cerrar"
+            onclick="cerrarNotificacion()"
+        >
+            ×
+        </button>
+
+        <div
+            id="notificacionIcono"
+            class="notificacion-icono"
+        >
+            <i class="fa-solid fa-circle-info"></i>
+        </div>
+
+        <h3 id="notificacionTitulo">
+            Información
+        </h3>
+
+        <p id="notificacionMensaje">
+        </p>
+
+        <button
+            type="button"
+            class="boton boton-principal"
+            onclick="cerrarNotificacion()"
+        >
+            Aceptar
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ==========================================
+     NOTIFICACIONES DEL SISTEMA
+     ========================================== -->
+
+<div id="notificacionSistema" class="notificacion-overlay">
+
+    <div class="notificacion">
+
+        <button
+            type="button"
+            class="notificacion-cerrar"
+            onclick="cerrarNotificacion()"
+        >
+            ×
+        </button>
+
+        <div
+            id="notificacionIcono"
+            class="notificacion-icono"
+        >
+            <i class="fa-solid fa-circle-info"></i>
+        </div>
+
+        <h3 id="notificacionTitulo">
+            Información
+        </h3>
+
+        <p id="notificacionMensaje"></p>
+
+        <div
+            id="notificacionAcciones"
+            class="notificacion-acciones"
+        >
+
+            <button
+                type="button"
+                class="boton boton-principal"
+                onclick="cerrarNotificacion()"
+            >
+                Aceptar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+    <!-- =====================================================
+         JAVASCRIPT DE ENTREGAS
+         ===================================================== -->
+
+    <script
+        src="{{ url_for('static', filename='js/entregas.js') }}"
+    ></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pedidos - Sistema de Gestión de Entregas</title>
+
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/estilos.css') }}"
+>
+
+<!-- Iconos -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+```
+
+</head>
+
+<body class="modulo-body">
+
+<!-- =====================================================
+     ENCABEZADO
+     ===================================================== -->
+
+<header class="modulo-header">
+
+```
+<div class="modulo-identidad">
+
+    <a
+        href="/"
+        class="volver-menu"
+        title="Volver al menú"
+    >
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+    </a>
+
+
+    <div class="modulo-icono">
+
+        <i class="fa-solid fa-clipboard-list"></i>
+
+    </div>
+
+
+    <div>
+
+        <span class="modulo-seccion">
+            GESTIÓN OPERATIVA
+        </span>
+
+        <h1>
+            Pedidos
+        </h1>
+
+    </div>
+
+</div>
+
+
+<div class="header-status">
+
+    <span class="status-dot"></span>
+
+    Sistema operativo
+
+</div>
+```
+
+</header>
+
+<!-- =====================================================
+     CONTENIDO PRINCIPAL
+     ===================================================== -->
+
+<main class="modulo-container">
+
+```
+<!-- =================================================
+     INTRODUCCIÓN
+     ================================================= -->
+
+<section class="modulo-intro">
+
+    <div>
+
+        <span class="intro-label">
+            GESTIÓN DE PEDIDOS
+        </span>
+
+        <h2>
+            Administración de pedidos
+        </h2>
+
+        <p>
+            Registra nuevos pedidos asociando cada operación
+            con un cliente y los productos solicitados.
+            Consulta los pedidos registrados y controla
+            su información para facilitar la gestión
+            de las entregas.
+        </p>
+
+    </div>
+
+
+    <div class="intro-marca">
+
+        <i class="fa-solid fa-clipboard-check"></i>
+
+    </div>
+
+</section>
+
+
+
+<!-- =================================================
+     PANEL: REGISTRAR PEDIDO
+     ================================================= -->
+
+<section class="panel formulario-panel">
+
+
+    <div class="panel-header">
+
+        <div class="panel-titulo">
+
+            <div class="panel-icono">
+
+                <i class="fa-solid fa-plus"></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    NUEVO REGISTRO
+                </span>
+
+                <h3>
+                    Registrar pedido
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <span class="panel-numero">
+            01
+        </span>
+
+    </div>
+
+
+
+    <form id="formularioPedido">
+
+
+        <div class="form-grid">
+
+
+            <!-- =================================================
+                 CLIENTE
+                 ================================================= -->
+
+            <div class="campo campo-completo">
+
+                <label for="cliente">
+                    Cliente
+                </label>
+
+                <div class="input-contenedor">
+
+                    <i class="fa-solid fa-user"></i>
+
+                    <select
+                        id="cliente"
+                        required
+                    >
+
+                        <option value="">
+                            Seleccione un cliente
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 PRODUCTO
+                 ================================================= -->
+
+            <div class="campo">
+
+                <label for="producto">
+                    Producto
+                </label>
+
+                <div class="input-contenedor">
+
+                    <i class="fa-solid fa-box"></i>
+
+                    <select id="producto">
+
+                        <option value="">
+                            Seleccione un producto
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 CANTIDAD
+                 ================================================= -->
+
+            <div class="campo">
+
+                <label for="cantidad">
+                    Cantidad
+                </label>
+
+                <div class="input-contenedor">
+
+                    <i class="fa-solid fa-cubes"></i>
+
+                    <input
+                        type="number"
+                        id="cantidad"
+                        min="1"
+                        value="1"
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 AGREGAR PRODUCTO
+                 ================================================= -->
+
+            <div class="campo campo-completo">
+
+                <div class="form-footer">
+
+                    <div class="form-ayuda">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                        Seleccione un producto y especifique
+                        la cantidad antes de agregarlo.
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="btnAgregarProducto"
+                        class="boton boton-principal"
+                    >
+
+                        <i class="fa-solid fa-plus"></i>
+
+                        Agregar producto
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             DETALLE DEL PEDIDO
+             ================================================= -->
+
+        <div class="detalle-pedido">
+
+            <div class="subtitulo-formulario">
+
+                <div>
+
+                    <span>
+                        DETALLE DEL PEDIDO
+                    </span>
+
+                    <h3>
+                        Productos seleccionados
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="tabla-contenedor">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Producto
+                            </th>
+
+                            <th>
+                                Cantidad
+                            </th>
+
+                            <th>
+                                Precio
+                            </th>
+
+                            <th>
+                                Subtotal
+                            </th>
+
+                            <th>
+                                Acción
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="detallePedido">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             TOTAL
+             ================================================= -->
+
+        <div class="total-pedido">
+
+            <span>
+                Total del pedido
+            </span>
+
+            <strong>
+
+                S/
+
+                <span id="totalPedido">
+                    0.00
+                </span>
+
+            </strong>
+
+        </div>
+
+
+
+        <!-- =================================================
+             REGISTRAR
+             ================================================= -->
+
+        <div class="form-footer">
+
+            <div class="form-ayuda">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+                Verifique los productos y cantidades antes
+                de registrar el pedido.
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="boton boton-principal"
+            >
+
+                <i class="fa-solid fa-check"></i>
+
+                Registrar pedido
+
+            </button>
+
+        </div>
+
+
+    </form>
+
+</section>
+
+
+
+<!-- =================================================
+     PANEL: PEDIDOS REGISTRADOS
+     ================================================= -->
+
+<section class="panel tabla-panel">
+
+
+    <div class="panel-header">
+
+        <div class="panel-titulo">
+
+            <div class="panel-icono panel-icono-amarillo">
+
+                <i class="fa-solid fa-list-check"></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    REGISTRO OPERATIVO
+                </span>
+
+                <h3>
+                    Pedidos registrados
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <span class="panel-numero">
+            02
+        </span>
+
+    </div>
+
+
+
+    <div class="tabla-contenedor">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        ID
+                    </th>
+
+                    <th>
+                        Cliente
+                    </th>
+
+                    <th>
+                        Fecha
+                    </th>
+
+                    <th>
+                        Total
+                    </th>
+
+                    <th>
+                        Estado
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="tablaPedidos">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+</section>
+```
+
+</main>
+
+<!-- =====================================================
+     PIE DE PÁGINA
+     ===================================================== -->
+
+<footer class="modulo-footer">
+
+```
+<div>
+
+    Sistema de Gestión de Entregas
+
+</div>
+
+
+<div class="footer-operacion">
+
+    <span class="status-dot"></span>
+
+    Operación activa
+
+</div>
+```
+
+</footer>
+
+<script
+    src="{{ url_for('static', filename='js/pedidos.js') }}"
+></script>
+
+</body>
+
+</html>
