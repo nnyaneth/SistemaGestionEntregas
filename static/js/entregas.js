@@ -9,36 +9,23 @@ function mostrarNotificacion(
 ) {
 
     const overlay =
-        document.getElementById(
-            "notificacionSistema"
-        );
+        document.getElementById("notificacionSistema");
 
     const tituloElemento =
-        document.getElementById(
-            "notificacionTitulo"
-        );
+        document.getElementById("notificacionTitulo");
 
     const mensajeElemento =
-        document.getElementById(
-            "notificacionMensaje"
-        );
+        document.getElementById("notificacionMensaje");
 
     const icono =
-        document.getElementById(
-            "notificacionIcono"
-        );
+        document.getElementById("notificacionIcono");
 
     const acciones =
-        document.getElementById(
-            "notificacionAcciones"
-        );
+        document.getElementById("notificacionAcciones");
 
 
-    tituloElemento.textContent =
-        titulo;
-
-    mensajeElemento.textContent =
-        mensaje;
+    tituloElemento.textContent = titulo;
+    mensajeElemento.textContent = mensaje;
 
 
     if (tipo === "error") {
@@ -96,135 +83,91 @@ function cerrarNotificacion() {
 
 }
 
+
 // ==========================================
-// MAPA DE ENTREGA
+// GOOGLE MAPS - ENTREGA
 // ==========================================
 
 let mapaEntrega = null;
+
 let marcadorOrigen = null;
+
 let marcadorDestino = null;
+
 let lineaRuta = null;
 
 
-// Coordenadas FIJAS del local
-const LAT_ORIGEN = -10.664318012426412;
-const LON_ORIGEN = -76.253655557701;
+// ==========================================
+// COORDENADAS DEL LOCAL
+// ==========================================
+
+const LAT_ORIGEN =
+    -10.664318012426412;
+
+const LON_ORIGEN =
+    -76.253655557701;
 
 
 // ==========================================
-// INICIALIZAR MAPA
+// INICIALIZAR GOOGLE MAPS
 // ==========================================
 
-function inicializarMapa() {
+async function inicializarMapa() {
 
     if (mapaEntrega) {
         return;
     }
 
-    mapaEntrega = L.map("mapaEntrega").setView(
-        [LAT_ORIGEN, LON_ORIGEN],
-        14
-    );
+
+    const { Map } =
+        await google.maps.importLibrary("maps");
 
 
-    L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        {
-            attribution:
-                '&copy; OpenStreetMap contributors'
-        }
-    ).addTo(mapaEntrega);
+    const { AdvancedMarkerElement } =
+        await google.maps.importLibrary("marker");
 
 
-    marcadorOrigen = L.marker([
-        LAT_ORIGEN,
-        LON_ORIGEN
-    ])
-    .addTo(mapaEntrega)
-    .bindPopup(
-        "<b>Origen</b><br>Jr. Hilario Cabrera 201"
-    );
-}
+    mapaEntrega =
+        new Map(
+            document.getElementById("mapaEntrega"),
+            {
 
-// ==========================================
-// NOTIFICACIONES DEL SISTEMA
-// ==========================================
+                center: {
+                    lat: LAT_ORIGEN,
+                    lng: LON_ORIGEN
+                },
 
-function mostrarNotificacion(
-    mensaje,
-    titulo = "Información",
-    tipo = "info"
-) {
+                zoom: 14,
 
-    const overlay =
-        document.getElementById(
-            "notificacionSistema"
-        );
+                mapId: "DEMO_MAP_ID"
 
-    const tituloElemento =
-        document.getElementById(
-            "notificacionTitulo"
-        );
-
-    const mensajeElemento =
-        document.getElementById(
-            "notificacionMensaje"
-        );
-
-    const icono =
-        document.getElementById(
-            "notificacionIcono"
+            }
         );
 
 
-    tituloElemento.textContent =
-        titulo;
+    // ==========================================
+    // MARCADOR DEL ORIGEN
+    // ==========================================
 
-    mensajeElemento.textContent =
-        mensaje;
+    marcadorOrigen =
+        new AdvancedMarkerElement({
 
+            map: mapaEntrega,
 
-    if (tipo === "error") {
+            position: {
 
-        icono.innerHTML =
-            '<i class="fa-solid fa-circle-exclamation"></i>';
+                lat: LAT_ORIGEN,
+                lng: LON_ORIGEN
 
-    }
+            },
 
-    else if (tipo === "success") {
+            title:
+                "Origen - Jr. Hilario Cabrera 201"
 
-        icono.innerHTML =
-            '<i class="fa-solid fa-circle-check"></i>';
-
-    }
-
-    else if (tipo === "warning") {
-
-        icono.innerHTML =
-            '<i class="fa-solid fa-triangle-exclamation"></i>';
-
-    }
-
-    else {
-
-        icono.innerHTML =
-            '<i class="fa-solid fa-circle-info"></i>';
-
-    }
-
-
-    overlay.classList.add("activa");
+        });
 
 }
 
-
-function cerrarNotificacion() {
-
-    document
-        .getElementById("notificacionSistema")
-        .classList.remove("activa");
-
-}
 
 // ==========================================
 // CARGAR ENTREGAS
@@ -232,97 +175,129 @@ function cerrarNotificacion() {
 
 async function cargarEntregas() {
 
-    const respuesta = await fetch("/entregas");
+    try {
 
-    const entregas = await respuesta.json();
-
-    const tabla =
-        document.getElementById("tablaEntregas");
-
-    tabla.innerHTML = "";
+        const respuesta =
+            await fetch("/entregas");
 
 
-    entregas.forEach(entrega => {
+        if (!respuesta.ok) {
 
-        const fila = `
+            throw new Error(
+                "No se pudieron cargar las entregas."
+            );
 
-            <tr>
+        }
 
-                <td>
-                    ${entrega.id_entrega}
-                </td>
 
-                <td>
-                    ${entrega.id_pedido}
-                </td>
+        const entregas =
+            await respuesta.json();
 
-                <td>
-                    ${entrega.id_repartidor}
-                </td>
 
-                <td>
-                    ${entrega.direccion_destino}
-                </td>
+        const tabla =
+            document.getElementById(
+                "tablaEntregas"
+            );
 
-                <td>
-                    ${entrega.distancia_km ?? "-"} km
-                </td>
 
-                <td>
-                    ${entrega.duracion_min ?? "-"} min
-                </td>
+        tabla.innerHTML = "";
 
-                <td>
 
-                    <select
-                        onchange="cambiarEstadoEntrega(
-                            ${entrega.id_entrega},
-                            this.value
-                        )"
-                    >
+        entregas.forEach(entrega => {
 
-                        <option
-                            value="Pendiente"
-                            ${entrega.estado === "Pendiente" ? "selected" : ""}
+            const fila = `
+
+                <tr>
+
+                    <td>
+                        ${entrega.id_entrega}
+                    </td>
+
+                    <td>
+                        ${entrega.id_pedido}
+                    </td>
+
+                    <td>
+                        ${entrega.id_repartidor}
+                    </td>
+
+                    <td>
+                        ${entrega.direccion_destino}
+                    </td>
+
+                    <td>
+                        ${entrega.distancia_km ?? "-"} km
+                    </td>
+
+                    <td>
+                        ${entrega.duracion_min ?? "-"} min
+                    </td>
+
+                    <td>
+
+                        <select
+                            onchange="cambiarEstadoEntrega(
+                                ${entrega.id_entrega},
+                                this.value
+                            )"
                         >
-                            Pendiente
-                        </option>
 
-                        <option
-                            value="En camino"
-                            ${entrega.estado === "En camino" ? "selected" : ""}
+                            <option
+                                value="Pendiente"
+                                ${entrega.estado === "Pendiente" ? "selected" : ""}
+                            >
+                                Pendiente
+                            </option>
+
+                            <option
+                                value="En camino"
+                                ${entrega.estado === "En camino" ? "selected" : ""}
+                            >
+                                En camino
+                            </option>
+
+                            <option
+                                value="Entregado"
+                                ${entrega.estado === "Entregado" ? "selected" : ""}
+                            >
+                                Entregado
+                            </option>
+
+                        </select>
+
+                    </td>
+
+                    <td>
+
+                        <button
+                            type="button"
+                            onclick="eliminarEntrega(
+                                ${entrega.id_entrega}
+                            )"
                         >
-                            En camino
-                        </option>
+                            Eliminar
+                        </button>
 
-                        <option
-                            value="Entregado"
-                            ${entrega.estado === "Entregado" ? "selected" : ""}
-                        >
-                            Entregado
-                        </option>
+                    </td>
 
-                    </select>
+                </tr>
 
-                </td>
+            `;
 
-                <td>
 
-                    <button
-                        onclick="eliminarEntrega(${entrega.id_entrega})"
-                    >
-                        Eliminar
-                    </button>
+            tabla.innerHTML += fila;
 
-                </td>
+        });
 
-            </tr>
 
-        `;
+    } catch (error) {
 
-        tabla.innerHTML += fila;
+        console.error(
+            "Error al cargar entregas:",
+            error
+        );
 
-    });
+    }
 
 }
 
@@ -333,143 +308,290 @@ async function cargarEntregas() {
 
 document
     .getElementById("formularioEntrega")
-    .addEventListener("submit", async function(event) {
+    .addEventListener(
+        "submit",
+        async function(event) {
 
-        event.preventDefault();
+            event.preventDefault();
 
 
-        const entrega = {
-
-            id_pedido:
+            const idPedido =
                 parseInt(
-                    document.getElementById("id_pedido").value
-                ),
+                    document.getElementById(
+                        "id_pedido"
+                    ).value
+                );
 
-            id_repartidor:
+
+            const idRepartidor =
                 parseInt(
-                    document.getElementById("id_repartidor").value
-                ),
+                    document.getElementById(
+                        "id_repartidor"
+                    ).value
+                );
 
-            direccion_destino:
+
+            // ==========================================
+            // VALIDAR PEDIDO
+            // ==========================================
+
+            if (!idPedido) {
+
+                mostrarNotificacion(
+                    "Debe seleccionar un pedido antes de continuar.",
+                    "Pedido requerido",
+                    "warning"
+                );
+
+                return;
+
+            }
+
+
+            // ==========================================
+            // VALIDAR REPARTIDOR
+            // ==========================================
+
+            if (!idRepartidor) {
+
+                mostrarNotificacion(
+                    "Debe seleccionar un repartidor antes de continuar.",
+                    "Repartidor requerido",
+                    "warning"
+                );
+
+                return;
+
+            }
+
+
+            // ==========================================
+            // VALIDAR DIRECCIÓN
+            // ==========================================
+
+            const direccion =
                 document.getElementById(
                     "direccion_destino"
-                ).value,
+                ).value.trim();
 
-            latitud_destino:
-                document.getElementById(
-                    "latitud_destino"
-                ).value
-                    ? parseFloat(
-                        document.getElementById(
-                            "latitud_destino"
-                        ).value
+
+            if (!direccion) {
+
+                mostrarNotificacion(
+                    "Debe ingresar una dirección de destino.",
+                    "Dirección requerida",
+                    "warning"
+                );
+
+                return;
+
+            }
+
+
+            // ==========================================
+            // VALIDAR COORDENADAS
+            // ==========================================
+
+            const latitud =
+                parseFloat(
+                    document.getElementById(
+                        "latitud_destino"
+                    ).value
+                );
+
+
+            const longitud =
+                parseFloat(
+                    document.getElementById(
+                        "longitud_destino"
+                    ).value
+                );
+
+
+            if (
+                Number.isNaN(latitud) ||
+                Number.isNaN(longitud)
+            ) {
+
+                mostrarNotificacion(
+                    "Primero debes calcular la ruta del destino.",
+                    "Ruta requerida",
+                    "warning"
+                );
+
+                return;
+
+            }
+
+
+            // ==========================================
+            // VALIDAR DISTANCIA
+            // ==========================================
+
+            const distancia =
+                parseFloat(
+                    document.getElementById(
+                        "distancia_km"
+                    ).value
+                );
+
+
+            const duracion =
+                parseFloat(
+                    document.getElementById(
+                        "duracion_min"
+                    ).value
+                );
+
+
+            if (
+                Number.isNaN(distancia) ||
+                Number.isNaN(duracion)
+            ) {
+
+                mostrarNotificacion(
+                    "Primero debes calcular la ruta para obtener la distancia y duración.",
+                    "Ruta no calculada",
+                    "warning"
+                );
+
+                return;
+
+            }
+
+
+            // ==========================================
+            // CREAR OBJETO DE ENTREGA
+            // ==========================================
+
+            const entrega = {
+
+                id_pedido:
+                    idPedido,
+
+                id_repartidor:
+                    idRepartidor,
+
+                direccion_destino:
+                    direccion,
+
+                latitud_destino:
+                    latitud,
+
+                longitud_destino:
+                    longitud,
+
+                distancia_km:
+                    distancia,
+
+                duracion_min:
+                    duracion
+
+            };
+
+
+            try {
+
+                // ==========================================
+                // REGISTRAR ENTREGA
+                // ==========================================
+
+                const respuesta =
+                    await fetch(
+                        "/entregas",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    entrega
+                                )
+
+                        }
+                    );
+
+
+                const resultado =
+                    await respuesta.json();
+
+
+                if (!respuesta.ok) {
+
+                    mostrarNotificacion(
+                        resultado.error ||
+                        "No se pudo registrar la entrega.",
+                        "Error",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                mostrarNotificacion(
+                    resultado.mensaje ||
+                    "La entrega fue registrada correctamente.",
+                    "Entrega registrada",
+                    "success"
+                );
+
+
+                // ==========================================
+                // LIMPIAR FORMULARIO
+                // ==========================================
+
+                document
+                    .getElementById(
+                        "formularioEntrega"
                     )
-                    : null,
-
-            longitud_destino:
-                document.getElementById(
-                    "longitud_destino"
-                ).value
-                    ? parseFloat(
-                        document.getElementById(
-                            "longitud_destino"
-                        ).value
-                    )
-                    : null,
-
-            distancia_km:
-                document.getElementById(
-                    "distancia_km"
-                ).value
-                    ? parseFloat(
-                        document.getElementById(
-                            "distancia_km"
-                        ).value
-                    )
-                    : null,
-
-            duracion_min:
-                document.getElementById(
-                    "duracion_min"
-                ).value
-                    ? parseFloat(
-                        document.getElementById(
-                            "duracion_min"
-                        ).value
-                    )
-                    : null
-
-        };
+                    .reset();
 
 
-        // ==========================================
-        // VALIDAR PEDIDO Y REPARTIDOR
-        // ==========================================
+                // ==========================================
+                // LIMPIAR MAPA
+                // ==========================================
 
-        if (!entrega.id_pedido) {
+                limpiarDestinoMapa();
 
-            mostrarNotificacion(
-    "Debe seleccionar un pedido antes de continuar.",
-    "Pedido requerido",
-    "warning"
-);
+
+                // ==========================================
+                // ACTUALIZAR INFORMACIÓN
+                // ==========================================
+
+                await cargarPedidosDisponibles();
+
+                await cargarRepartidoresDisponibles();
+
+                await cargarEntregas();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Error al registrar entrega:",
+                    error
+                );
+
+
+                mostrarNotificacion(
+                    "Ocurrió un error al registrar la entrega.",
+                    "Error",
+                    "error"
+                );
+
+            }
 
         }
-
-
-        if (!entrega.id_repartidor) {
-
-            mostrarNotificacion(
-    "Debe seleccionar un repartidor antes de continuar.",
-    "Repartidor requerido",
-    "warning"
-);
-
-        }
-
-
-        // ==========================================
-        // REGISTRAR ENTREGA
-        // ==========================================
-
-        const respuesta = await fetch("/entregas", {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify(entrega)
-
-        });
-
-
-        const resultado =
-            await respuesta.json();
-
-
-        alert(
-            resultado.mensaje ||
-            resultado.error
-        );
-
-
-        if (respuesta.ok) {
-
-            document
-                .getElementById("formularioEntrega")
-                .reset();
-
-            await cargarPedidosDisponibles();
-
-            await cargarRepartidoresDisponibles();
-
-            await cargarEntregas();
-
-        }
-
-    });
+    );
 
 
 // ==========================================
@@ -478,36 +600,75 @@ document
 
 async function cargarRepartidoresDisponibles() {
 
-    const respuesta =
-        await fetch("/repartidores/disponibles");
+    try {
 
-    const repartidores =
-        await respuesta.json();
-
-    const selector =
-        document.getElementById("id_repartidor");
-
-    selector.innerHTML = `
-        <option value="">
-            Seleccione un repartidor
-        </option>
-    `;
+        const respuesta =
+            await fetch(
+                "/repartidores/disponibles"
+            );
 
 
-    repartidores.forEach(repartidor => {
+        if (!respuesta.ok) {
 
-        const opcion =
-            document.createElement("option");
+            throw new Error(
+                "No se pudieron cargar los repartidores."
+            );
 
-        opcion.value =
-            repartidor.id_repartidor;
+        }
 
-        opcion.textContent =
-            repartidor.nombre;
 
-        selector.appendChild(opcion);
+        const repartidores =
+            await respuesta.json();
 
-    });
+
+        const selector =
+            document.getElementById(
+                "id_repartidor"
+            );
+
+
+        selector.innerHTML = `
+
+            <option value="">
+                Seleccione un repartidor
+            </option>
+
+        `;
+
+
+        repartidores.forEach(
+            repartidor => {
+
+                const opcion =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                opcion.value =
+                    repartidor.id_repartidor;
+
+
+                opcion.textContent =
+                    repartidor.nombre;
+
+
+                selector.appendChild(
+                    opcion
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al cargar repartidores:",
+            error
+        );
+
+    }
 
 }
 
@@ -518,221 +679,419 @@ async function cargarRepartidoresDisponibles() {
 
 async function cargarPedidosDisponibles() {
 
-    const respuesta =
-        await fetch("/pedidos/disponibles");
+    try {
 
-    const pedidos =
-        await respuesta.json();
-
-    const selector =
-        document.getElementById("id_pedido");
-
-    selector.innerHTML = `
-        <option value="">
-            Seleccione un pedido
-        </option>
-    `;
+        const respuesta =
+            await fetch(
+                "/pedidos/disponibles"
+            );
 
 
-    pedidos.forEach(pedido => {
+        if (!respuesta.ok) {
 
-        const opcion =
-            document.createElement("option");
+            throw new Error(
+                "No se pudieron cargar los pedidos."
+            );
 
-        opcion.value =
-            pedido.id_pedido;
+        }
 
-        opcion.textContent =
-            `Pedido #${pedido.id_pedido} - S/ ${pedido.total.toFixed(2)} - ${pedido.estado}`;
 
-        selector.appendChild(opcion);
+        const pedidos =
+            await respuesta.json();
 
-    });
+
+        const selector =
+            document.getElementById(
+                "id_pedido"
+            );
+
+
+        selector.innerHTML = `
+
+            <option value="">
+                Seleccione un pedido
+            </option>
+
+        `;
+
+
+        pedidos.forEach(
+            pedido => {
+
+                const opcion =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                opcion.value =
+                    pedido.id_pedido;
+
+
+                opcion.textContent =
+                    `Pedido #${pedido.id_pedido} - S/ ${Number(pedido.total).toFixed(2)} - ${pedido.estado}`;
+
+
+                selector.appendChild(
+                    opcion
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al cargar pedidos:",
+            error
+        );
+
+    }
 
 }
 
 
 // ==========================================
-// CARGAR DATOS DEL CLIENTE
-// AL SELECCIONAR PEDIDO
+// SELECCIONAR PEDIDO
 // ==========================================
 
 document
     .getElementById("id_pedido")
-    .addEventListener("change", async function () {
+    .addEventListener(
+        "change",
+        async function() {
 
-        const idPedido = this.value;
+            const idPedido =
+                this.value;
 
-        // ==========================================
-        // LIMPIAR CAMPOS
-        // ==========================================
-
-        if (!idPedido) {
-
-            document.getElementById(
-                "direccion_destino"
-            ).value = "";
-
-            document.getElementById(
-                "latitud_destino"
-            ).value = "";
-
-            document.getElementById(
-                "longitud_destino"
-            ).value = "";
-
-            document.getElementById(
-                "distancia_km"
-            ).value = "";
-
-            document.getElementById(
-                "duracion_min"
-            ).value = "";
-
-            return;
-        }
-
-
-        try {
 
             // ==========================================
-            // OBTENER PEDIDOS DISPONIBLES
+            // LIMPIAR CAMPOS
             // ==========================================
 
-            const respuesta =
-                await fetch("/pedidos/disponibles");
+            if (!idPedido) {
 
-            const pedidos =
-                await respuesta.json();
+                limpiarDatosDestino();
+
+                limpiarDestinoMapa();
+
+                return;
+
+            }
 
 
-            const pedido =
-                pedidos.find(
-                    p => p.id_pedido == idPedido
+            try {
+
+                // ==========================================
+                // OBTENER PEDIDOS
+                // ==========================================
+
+                const respuesta =
+                    await fetch(
+                        "/pedidos/disponibles"
+                    );
+
+
+                if (!respuesta.ok) {
+
+                    throw new Error(
+                        "No se pudieron obtener los pedidos."
+                    );
+
+                }
+
+
+                const pedidos =
+                    await respuesta.json();
+
+
+                const pedido =
+                    pedidos.find(
+                        p =>
+                            p.id_pedido == idPedido
+                    );
+
+
+                if (!pedido) {
+
+                    mostrarNotificacion(
+                        "No se encontró el pedido seleccionado.",
+                        "Pedido no encontrado",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                // ==========================================
+                // CARGAR DIRECCIÓN
+                // ==========================================
+
+                const direccion =
+                    pedido.direccion || "";
+
+
+                document.getElementById(
+                    "direccion_destino"
+                ).value =
+                    direccion;
+
+
+                // ==========================================
+                // VERIFICAR COORDENADAS
+                // ==========================================
+
+                if (
+                    pedido.latitud === null ||
+                    pedido.longitud === null
+                ) {
+
+                    mostrarNotificacion(
+                        "El cliente no tiene coordenadas registradas. Puedes modificar la dirección y calcular la ruta.",
+                        "Ubicación no disponible",
+                        "warning"
+                    );
+
+                    return;
+
+                }
+
+
+                // ==========================================
+                // GUARDAR COORDENADAS
+                // ==========================================
+
+                document.getElementById(
+                    "latitud_destino"
+                ).value =
+                    pedido.latitud;
+
+
+                document.getElementById(
+                    "longitud_destino"
+                ).value =
+                    pedido.longitud;
+
+
+                // ==========================================
+                // LIMPIAR CÁLCULOS ANTERIORES
+                // ==========================================
+
+                document.getElementById(
+                    "distancia_km"
+                ).value = "";
+
+
+                document.getElementById(
+                    "duracion_min"
+                ).value = "";
+
+
+                const distanciaMostrada =
+                    document.getElementById(
+                        "distanciaMostrada"
+                    );
+
+
+                if (distanciaMostrada) {
+
+                    distanciaMostrada.textContent =
+                        "-";
+
+                }
+
+
+                const duracionMostrada =
+                    document.getElementById(
+                        "duracionMostrada"
+                    );
+
+
+                if (duracionMostrada) {
+
+                    duracionMostrada.textContent =
+                        "-";
+
+                }
+
+
+                // ==========================================
+                // MOSTRAR DESTINO AUTOMÁTICAMENTE
+                // ==========================================
+
+                await mostrarDestinoEnMapa(
+                    pedido.latitud,
+                    pedido.longitud,
+                    direccion
                 );
 
 
-            if (!pedido) {
-
-                alert("No se encontró el pedido");
-
-                return;
-            }
+                console.log(
+                    "Pedido seleccionado:",
+                    pedido
+                );
 
 
-            // ==========================================
-            // MOSTRAR DIRECCIÓN DEL CLIENTE
-            // ==========================================
+            } catch (error) {
 
-            const direccion =
-                pedido.direccion || "";
+                console.error(
+                    "Error al cargar datos del pedido:",
+                    error
+                );
 
-
-            document.getElementById(
-                "direccion_destino"
-            ).value = direccion;
-
-
-            if (!direccion) {
 
                 mostrarNotificacion(
-    "El cliente seleccionado no tiene una dirección registrada.",
-    "Dirección no disponible",
-    "warning"
-);
+                    "No se pudieron obtener los datos del pedido.",
+                    "Error",
+                    "error"
+                );
 
-                return;
             }
 
-
-            // ==========================================
-            // GEOCODIFICAR DIRECCIÓN
-            // ==========================================
-
-            const respuestaGeo =
-                await fetch("/geocodificar", {
-
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        direccion: direccion
-
-                    })
-
-                });
-
-
-            const resultadoGeo =
-                await respuestaGeo.json();
-
-
-            // ==========================================
-            // VERIFICAR GEOCODIFICACIÓN
-            // ==========================================
-
-            if (!respuestaGeo.ok) {
-
-                mostrarNotificacion(
-    resultadoGeo.error ||
-    "No se pudo encontrar la dirección.",
-    "Ubicación no encontrada",
-    "error"
-);
-
-                return;
-            }
-
-
-            // ==========================================
-            // COORDENADAS OBTENIDAS AUTOMÁTICAMENTE
-            // ==========================================
-
-            const latitud =
-                resultadoGeo.latitud;
-
-            const longitud =
-                resultadoGeo.longitud;
-
-
-            document.getElementById(
-                "latitud_destino"
-            ).value = latitud;
-
-
-            document.getElementById(
-                "longitud_destino"
-            ).value = longitud;
-
-
         }
+    );
 
 
-        catch (error) {
+// ==========================================
+// MOSTRAR DESTINO EN GOOGLE MAPS
+// ==========================================
 
-            console.error(
-                "Error al obtener ubicación:",
-                error
-            );
+async function mostrarDestinoEnMapa(
+    latitud,
+    longitud,
+    direccion
+) {
 
-            alert(
-                "No se pudo obtener la ubicación del destino"
-            );
+    await inicializarMapa();
 
-        }
+
+    const {
+        AdvancedMarkerElement
+    } =
+        await google.maps.importLibrary(
+            "marker"
+        );
+
+
+    // ==========================================
+    // ELIMINAR DESTINO ANTERIOR
+    // ==========================================
+
+    if (marcadorDestino) {
+
+        marcadorDestino.map = null;
+
+        marcadorDestino = null;
+
+    }
+
+
+    // ==========================================
+    // ELIMINAR LÍNEA ANTERIOR
+    // ==========================================
+
+    if (lineaRuta) {
+
+        lineaRuta.setMap(null);
+
+        lineaRuta = null;
+
+    }
+
+
+    // ==========================================
+    // CREAR DESTINO
+    // ==========================================
+
+    marcadorDestino =
+        new AdvancedMarkerElement({
+
+            map: mapaEntrega,
+
+            position: {
+
+                lat:
+                    parseFloat(latitud),
+
+                lng:
+                    parseFloat(longitud)
+
+            },
+
+            title:
+                direccion ||
+                "Destino de entrega"
+
+        });
+
+
+    // ==========================================
+    // AJUSTAR MAPA
+    // ==========================================
+
+    const { LatLngBounds } =
+        await google.maps.importLibrary(
+            "core"
+        );
+
+
+    const limites =
+        new LatLngBounds();
+
+
+    limites.extend({
+
+        lat:
+            LAT_ORIGEN,
+
+        lng:
+            LON_ORIGEN
 
     });
 
+
+    limites.extend({
+
+        lat:
+            parseFloat(latitud),
+
+        lng:
+            parseFloat(longitud)
+
+    });
+
+
+    mapaEntrega.fitBounds(
+        limites
+    );
+
+
+    console.log(
+        "Destino mostrado correctamente:",
+        {
+            latitud,
+            longitud,
+            direccion
+        }
+    );
+
+}
+
+
 // ==========================================
-// GEOCODIFICAR Y CALCULAR RUTA DESDE DIRECCIÓN
+// CALCULAR RUTA
+// ==========================================
+// IMPORTANTE:
+// La dirección escrita por el usuario se envía
+// al backend para que OpenRouteService la
+// convierta en coordenadas.
+// Después OpenRouteService calcula la ruta real.
 // ==========================================
 
-async function calcularRutaDesdeDireccion() {
+async function calcularRuta() {
 
     const direccion =
         document.getElementById(
@@ -740,9 +1099,36 @@ async function calcularRutaDesdeDireccion() {
         ).value.trim();
 
 
+    // ==========================================
+    // VALIDAR DIRECCIÓN
+    // ==========================================
+
     if (!direccion) {
 
-        alert("Ingrese una dirección de destino");
+        mostrarNotificacion(
+            "Debe ingresar una dirección de destino.",
+            "Dirección requerida",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    const idPedido =
+        document.getElementById(
+            "id_pedido"
+        ).value;
+
+
+    if (!idPedido) {
+
+        mostrarNotificacion(
+            "Primero debes seleccionar un pedido.",
+            "Pedido requerido",
+            "warning"
+        );
 
         return;
 
@@ -752,39 +1138,111 @@ async function calcularRutaDesdeDireccion() {
     try {
 
         // ==========================================
+        // MOSTRAR ESTADO DE CARGA
+        // ==========================================
+
+        const estadoRuta =
+            document.getElementById(
+                "estadoRuta"
+            );
+
+
+        if (estadoRuta) {
+
+            estadoRuta.innerHTML = `
+
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                Buscando dirección y calculando ruta...
+
+            `;
+
+        }
+
+
+        // ==========================================
+        // PASO 1
         // GEOCODIFICAR DIRECCIÓN
         // ==========================================
 
-        const respuestaGeo =
-            await fetch("/geocodificar", {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-                    direccion: direccion
-                })
-
-            });
+        console.log(
+            "Geocodificando dirección:",
+            direccion
+        );
 
 
-        const resultadoGeo =
-            await respuestaGeo.json();
+        const respuestaGeocodificacion =
+            await fetch(
+                "/geocodificar",
+                {
 
+                    method: "POST",
 
-        if (!respuestaGeo.ok) {
+                    headers: {
 
-            alert(
-                resultadoGeo.error ||
-                "No se encontró la dirección"
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        direccion:
+                            direccion
+
+                    })
+
+                }
             );
 
-            return;
+
+        const resultadoGeocodificacion =
+            await respuestaGeocodificacion.json();
+
+
+        if (
+            !respuestaGeocodificacion.ok
+        ) {
+
+            throw new Error(
+                resultadoGeocodificacion.error ||
+                "No se pudo encontrar la dirección."
+            );
 
         }
+
+
+        const latitudDestino =
+            parseFloat(
+                resultadoGeocodificacion.latitud
+            );
+
+
+        const longitudDestino =
+            parseFloat(
+                resultadoGeocodificacion.longitud
+            );
+
+
+        if (
+            Number.isNaN(latitudDestino) ||
+            Number.isNaN(longitudDestino)
+        ) {
+
+            throw new Error(
+                "La API no devolvió coordenadas válidas."
+            );
+
+        }
+
+
+        console.log(
+            "Coordenadas encontradas:",
+            {
+                latitudDestino,
+                longitudDestino
+            }
+        );
 
 
         // ==========================================
@@ -794,31 +1252,231 @@ async function calcularRutaDesdeDireccion() {
         document.getElementById(
             "latitud_destino"
         ).value =
-            resultadoGeo.latitud;
+            latitudDestino;
 
 
         document.getElementById(
             "longitud_destino"
         ).value =
-            resultadoGeo.longitud;
+            longitudDestino;
 
 
         // ==========================================
-        // CALCULAR RUTA
+        // PASO 2
+        // MOSTRAR DESTINO EN GOOGLE MAPS
         // ==========================================
 
-        await calcularRuta();
+        await mostrarDestinoEnMapa(
+            latitudDestino,
+            longitudDestino,
+            direccion
+        );
+
+
+        // ==========================================
+        // PASO 3
+        // CALCULAR RUTA CON ORS
+        // ==========================================
+
+        console.log(
+            "Calculando ruta con OpenRouteService..."
+        );
+
+
+        const respuestaRuta =
+            await fetch(
+                "/ruta",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        lat_destino:
+                            latitudDestino,
+
+                        lon_destino:
+                            longitudDestino
+
+                    })
+
+                }
+            );
+
+
+        const resultadoRuta =
+            await respuestaRuta.json();
+
+
+        if (!respuestaRuta.ok) {
+
+            throw new Error(
+                resultadoRuta.error ||
+                "No se pudo calcular la ruta."
+            );
+
+        }
+
+
+        const distanciaKm =
+            parseFloat(
+                resultadoRuta.distancia_km
+            );
+
+
+        const duracionMin =
+            parseFloat(
+                resultadoRuta.duracion_min
+            );
+
+
+        if (
+            Number.isNaN(distanciaKm) ||
+            Number.isNaN(duracionMin)
+        ) {
+
+            throw new Error(
+                "OpenRouteService no devolvió distancia o duración válidas."
+            );
+
+        }
+
+
+        console.log(
+            "Ruta calculada:",
+            resultadoRuta
+        );
+
+
+        // ==========================================
+        // GUARDAR DISTANCIA
+        // ==========================================
+
+        document.getElementById(
+            "distancia_km"
+        ).value =
+            distanciaKm.toFixed(2);
+
+
+        // ==========================================
+        // GUARDAR DURACIÓN
+        // ==========================================
+
+        document.getElementById(
+            "duracion_min"
+        ).value =
+            duracionMin.toFixed(2);
+
+
+        // ==========================================
+        // MOSTRAR DISTANCIA
+        // ==========================================
+
+        const distanciaMostrada =
+            document.getElementById(
+                "distanciaMostrada"
+            );
+
+
+        if (distanciaMostrada) {
+
+            distanciaMostrada.textContent =
+                `${distanciaKm.toFixed(2)} km`;
+
+        }
+
+
+        // ==========================================
+        // MOSTRAR DURACIÓN
+        // ==========================================
+
+        const duracionMostrada =
+            document.getElementById(
+                "duracionMostrada"
+            );
+
+
+        if (duracionMostrada) {
+
+            duracionMostrada.textContent =
+                `${duracionMin.toFixed(2)} min`;
+
+        }
+
+
+        // ==========================================
+        // DIBUJAR LÍNEA VISUAL
+        // EN GOOGLE MAPS
+        // ==========================================
+
+        await dibujarLineaRuta(
+    resultadoRuta.geometria
+);
+
+
+        // ==========================================
+        // ESTADO FINAL
+        // ==========================================
+
+        if (estadoRuta) {
+
+            estadoRuta.innerHTML = `
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                Ruta calculada correctamente.
+
+            `;
+
+        }
+
+
+        mostrarNotificacion(
+            `Distancia: ${distanciaKm.toFixed(2)} km. Duración: ${duracionMin.toFixed(2)} minutos.`,
+            "Ruta calculada",
+            "success"
+        );
 
 
     } catch (error) {
 
         console.error(
-            "Error:",
+            "Error al calcular ruta:",
             error
         );
 
-        alert(
-            "No se pudo obtener la ubicación"
+
+        const estadoRuta =
+            document.getElementById(
+                "estadoRuta"
+            );
+
+
+        if (estadoRuta) {
+
+            estadoRuta.innerHTML = `
+
+                <i class="fa-solid fa-circle-exclamation"></i>
+
+                No se pudo calcular la ruta.
+
+            `;
+
+        }
+
+
+        mostrarNotificacion(
+            error.message ||
+            "No se pudo calcular la ruta.",
+            "Error de ruta",
+            "error"
         );
 
     }
@@ -826,298 +1484,197 @@ async function calcularRutaDesdeDireccion() {
 }
 
 
-// ==========================================
-// MOSTRAR RUTA EN EL MAPA
-// ==========================================
+async function dibujarLineaRuta(geometria) {
 
-function mostrarRutaEnMapa(geometria) {
+    await inicializarMapa();
 
-    if (!geometria) {
+    // Eliminar ruta anterior
+    if (lineaRuta) {
+        lineaRuta.setMap(null);
+        lineaRuta = null;
+    }
 
+    // Verificar geometría
+    if (
+        !geometria ||
+        geometria.type !== "LineString" ||
+        !Array.isArray(geometria.coordinates) ||
+        geometria.coordinates.length === 0
+    ) {
         console.error(
-            "No se recibió geometría de la ruta"
+            "Geometría recibida:",
+            geometria
         );
 
-        return;
+        throw new Error(
+            "OpenRouteService no devolvió la geometría de la ruta."
+        );
+    }
+
+    // ==========================================
+    // CONVERTIR COORDENADAS ORS
+    // [longitud, latitud]
+    // A
+    // {lat, lng}
+    // ==========================================
+
+    const puntosRuta =
+        geometria.coordinates.map(coordenada => ({
+            lat: parseFloat(coordenada[1]),
+            lng: parseFloat(coordenada[0])
+        }));
+
+    console.log(
+        "Puntos de la ruta:",
+        puntosRuta.length
+    );
+
+    // ==========================================
+    // DIBUJAR RUTA
+    // ==========================================
+
+    lineaRuta = new google.maps.Polyline({
+        map: mapaEntrega,
+        path: puntosRuta,
+        geodesic: false,
+        strokeOpacity: 0.9,
+        strokeWeight: 6
+    });
+
+    // ==========================================
+    // AJUSTAR MAPA A LA RUTA
+    // ==========================================
+
+    const limites =
+        new google.maps.LatLngBounds();
+
+    puntosRuta.forEach(punto => {
+        limites.extend(punto);
+    });
+
+    mapaEntrega.fitBounds(limites);
+
+    console.log(
+        "✅ Ruta real dibujada sobre las calles"
+    );
+}
+
+// ==========================================
+// LIMPIAR DATOS DEL DESTINO
+// ==========================================
+
+function limpiarDatosDestino() {
+
+    document.getElementById(
+        "direccion_destino"
+    ).value = "";
+
+
+    document.getElementById(
+        "latitud_destino"
+    ).value = "";
+
+
+    document.getElementById(
+        "longitud_destino"
+    ).value = "";
+
+
+    document.getElementById(
+        "distancia_km"
+    ).value = "";
+
+
+    document.getElementById(
+        "duracion_min"
+    ).value = "";
+
+
+    const distanciaMostrada =
+        document.getElementById(
+            "distanciaMostrada"
+        );
+
+
+    if (distanciaMostrada) {
+
+        distanciaMostrada.textContent =
+            "-";
+
+    }
+
+
+    const duracionMostrada =
+        document.getElementById(
+            "duracionMostrada"
+        );
+
+
+    if (duracionMostrada) {
+
+        duracionMostrada.textContent =
+            "-";
+
+    }
+
+
+    const estadoRuta =
+        document.getElementById(
+            "estadoRuta"
+        );
+
+
+    if (estadoRuta) {
+
+        estadoRuta.innerHTML = "";
+
+    }
+
+}
+
+
+// ==========================================
+// LIMPIAR DESTINO DEL MAPA
+// ==========================================
+
+function limpiarDestinoMapa() {
+
+    if (marcadorDestino) {
+
+        marcadorDestino.map = null;
+
+        marcadorDestino = null;
 
     }
 
 
     if (lineaRuta) {
 
-        mapaEntrega.removeLayer(
-            lineaRuta
-        );
+        lineaRuta.setMap(null);
+
+        lineaRuta = null;
 
     }
 
 
-    const coordenadas =
-        polyline.decode(geometria);
+    if (mapaEntrega) {
 
+        mapaEntrega.setCenter({
 
-    lineaRuta =
-        L.polyline(
-            coordenadas,
-            {
-                weight: 5
-            }
-        ).addTo(mapaEntrega);
-
-
-    mapaEntrega.fitBounds(
-        lineaRuta.getBounds(),
-        {
-            padding: [30, 30]
-        }
-    );
-
-}
-
-// ==========================================
-// CALCULAR RUTA MEDIANTE LA API
-// ==========================================
-
-async function calcularRuta() {
-
-    const latitudDestino =
-        document.getElementById(
-            "latitud_destino"
-        ).value;
-
-
-    const longitudDestino =
-        document.getElementById(
-            "longitud_destino"
-        ).value;
-
-
-    // ==========================================
-    // VALIDAR COORDENADAS
-    // ==========================================
-
-    if (
-        !latitudDestino ||
-        !longitudDestino
-    ) {
-
-        document.getElementById(
-            "distancia_km"
-        ).value = "";
-
-        document.getElementById(
-            "duracion_min"
-        ).value = "";
-
-        return;
-
-    }
-
-
-    try {
-
-        // ==========================================
-        // ORIGEN DE PRUEBA
-        // ==========================================
-        // Por ahora utilizamos estas coordenadas
-        // como punto de origen.
-        //
-        // Después podemos reemplazarlas por
-        // la ubicación real del repartidor.
-
-        const datosRuta = {
-
-            lat_destino:
-                parseFloat(
-                    latitudDestino
-                ),
-
-            lon_destino:
-                parseFloat(
-                    longitudDestino
-                )
-
-        };
-
-        // ==========================================
-        // CONSULTAR API /ruta
-        // ==========================================
-
-        const respuesta =
-            await fetch("/ruta", {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type":
-                        "application/json"
-
-                },
-
-                body:
-                    JSON.stringify(
-                        datosRuta
-                    )
-
-            });
-
-
-        const resultado =
-            await respuesta.json();
-
-            // ==========================================
-// MOSTRAR DESTINO EN EL MAPA
-// ==========================================
-
-        inicializarMapa();
-
-
-        // Eliminar marcador anterior
-        if (marcadorDestino) {
-
-            mapaEntrega.removeLayer(
-                marcadorDestino
-            );
-
-        }
-
-
-        // Eliminar ruta anterior
-        if (lineaRuta) {
-
-            mapaEntrega.removeLayer(
-                lineaRuta
-            );
-
-        }
-
-
-        // Crear marcador del destino
-        marcadorDestino = L.marker([
-            parseFloat(latitudDestino),
-            parseFloat(longitudDestino)
-        ])
-        .addTo(mapaEntrega)
-        .bindPopup(
-            "<b>Destino</b><br>" +
-            document.getElementById(
-                "direccion_destino"
-            ).value
-        )
-        .openPopup();
-
-
-        // Ajustar mapa para mostrar origen y destino
-        const puntos = L.latLngBounds([
-
-            [
+            lat:
                 LAT_ORIGEN,
+
+            lng:
                 LON_ORIGEN
-            ],
 
-            [
-                parseFloat(latitudDestino),
-                parseFloat(longitudDestino)
-            ]
+        });
 
-        ]);
+        mapaEntrega.setZoom(14);
 
-
-        mapaEntrega.fitBounds(
-            puntos,
-            {
-                padding: [30, 30]
-            }
-        );
-
-        // ==========================================
-        // VERIFICAR ERROR
-        // ==========================================
-
-        if (!respuesta.ok) {
-
-            console.error(
-                "Error al calcular ruta:",
-                resultado
-            );
-
-            mostrarNotificacion(
-    resultado.error ||
-    "No se pudo calcular la ruta.",
-    "Error de ruta",
-    "error"
-);
-
-            return;
-
-        }
-
-
-/// ==========================================
-// MOSTRAR RESULTADO
-// ==========================================
-
-document.getElementById(
-    "distancia_km"
-).value =
-    resultado.distancia_km;
-
-
-document.getElementById(
-    "duracion_min"
-).value =
-    resultado.duracion_min;
-
-
-// Mostrar distancia en pantalla
-document.getElementById(
-    "distanciaMostrada"
-).textContent =
-    resultado.distancia_km + " km";
-
-
-// Mostrar duración en pantalla
-document.getElementById(
-    "duracionMostrada"
-).textContent =
-    resultado.duracion_min + " min";
-
-
-// ==========================================
-// MOSTRAR RUTA EN EL MAPA
-// ==========================================
-
-mostrarRutaEnMapa(
-    resultado.geometria
-);
-
-
-// ==========================================
-// ACTUALIZAR ESTADO
-// ==========================================
-
-document.getElementById(
-    "estadoRuta"
-).innerHTML = `
-    <i class="fa-solid fa-circle-check"></i>
-    Ruta calculada correctamente.
-`;
-
-    } catch (error) {
-
-    console.error(
-        "Error al calcular la ruta:",
-        error
-    );
-
-    alert(
-        "Ocurrió un error al calcular la ruta. Revisa la consola."
-    );
+    }
 
 }
 
-}
 
 // ==========================================
 // ELIMINAR ENTREGA
@@ -1141,20 +1698,24 @@ function mostrarConfirmacionEliminar(id) {
             "notificacionSistema"
         );
 
+
     const titulo =
         document.getElementById(
             "notificacionTitulo"
         );
+
 
     const mensaje =
         document.getElementById(
             "notificacionMensaje"
         );
 
+
     const icono =
         document.getElementById(
             "notificacionIcono"
         );
+
 
     const acciones =
         document.getElementById(
@@ -1165,8 +1726,10 @@ function mostrarConfirmacionEliminar(id) {
     titulo.textContent =
         "Eliminar entrega";
 
+
     mensaje.textContent =
         "¿Está seguro de eliminar esta entrega? Esta acción no se puede deshacer.";
+
 
     icono.innerHTML =
         '<i class="fa-solid fa-trash"></i>';
@@ -1207,49 +1770,73 @@ async function confirmarEliminacion(id) {
     cerrarNotificacion();
 
 
-    const respuesta =
-        await fetch(
-            `/entregas/${id}`,
-            {
-                method: "DELETE"
-            }
+    try {
+
+        const respuesta =
+            await fetch(
+                `/entregas/${id}`,
+                {
+
+                    method: "DELETE"
+
+                }
+            );
+
+
+        const resultado =
+            await respuesta.json();
+
+
+        if (respuesta.ok) {
+
+            mostrarNotificacion(
+                resultado.mensaje ||
+                "La entrega fue eliminada correctamente.",
+                "Entrega eliminada",
+                "success"
+            );
+
+
+            document
+                .getElementById(
+                    "formularioEntrega"
+                )
+                .reset();
+
+
+            limpiarDestinoMapa();
+
+
+            await cargarPedidosDisponibles();
+
+            await cargarRepartidoresDisponibles();
+
+            await cargarEntregas();
+
+        }
+
+        else {
+
+            mostrarNotificacion(
+                resultado.error ||
+                "No se pudo eliminar la entrega.",
+                "Error",
+                "error"
+            );
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al eliminar entrega:",
+            error
         );
 
 
-    const resultado =
-        await respuesta.json();
-
-
-    if (respuesta.ok) {
-
         mostrarNotificacion(
-            resultado.mensaje ||
-            "La entrega fue eliminada correctamente.",
-            "Entrega eliminada",
-            "success"
-        );
-
-
-        document
-            .getElementById(
-                "formularioEntrega"
-            )
-            .reset();
-
-
-        await cargarPedidosDisponibles();
-
-        await cargarRepartidoresDisponibles();
-
-        await cargarEntregas();
-
-    }
-
-    else {
-
-        mostrarNotificacion(
-            resultado.error ||
-            "No se pudo eliminar la entrega.",
+            "Ocurrió un error al eliminar la entrega.",
             "Error",
             "error"
         );
@@ -1268,45 +1855,79 @@ async function cambiarEstadoEntrega(
     estado
 ) {
 
-    const respuesta =
-        await fetch(
-            `/entregas/${id}/estado`,
-            {
+    try {
 
-                method: "PUT",
+        const respuesta =
+            await fetch(
+                `/entregas/${id}/estado`,
+                {
 
-                headers: {
+                    method: "PUT",
 
-                    "Content-Type":
-                        "application/json"
+                    headers: {
 
-                },
+                        "Content-Type":
+                            "application/json"
 
-                body: JSON.stringify({
+                    },
 
-                    estado: estado
+                    body:
+                        JSON.stringify({
 
-                })
+                            estado:
+                                estado
 
-            }
+                        })
+
+                }
+            );
+
+
+        const resultado =
+            await respuesta.json();
+
+
+        if (respuesta.ok) {
+
+            mostrarNotificacion(
+                resultado.mensaje ||
+                "Estado actualizado correctamente.",
+                "Estado actualizado",
+                "success"
+            );
+
+
+            await cargarEntregas();
+
+            await cargarRepartidoresDisponibles();
+
+        }
+
+        else {
+
+            mostrarNotificacion(
+                resultado.error ||
+                "No se pudo actualizar el estado.",
+                "Error",
+                "error"
+            );
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al cambiar estado:",
+            error
         );
 
 
-    const resultado =
-        await respuesta.json();
-
-
-    alert(
-        resultado.mensaje ||
-        resultado.error
-    );
-
-
-    if (respuesta.ok) {
-
-        await cargarEntregas();
-
-        await cargarRepartidoresDisponibles();
+        mostrarNotificacion(
+            "Ocurrió un error al actualizar el estado.",
+            "Error",
+            "error"
+        );
 
     }
 
