@@ -28,11 +28,11 @@ app = Flask(
 # ==========================================
 
 conexion_sql = (
-    "DRIVER={ODBC Driver 17 for SQL Server};"
-    "SERVER=sql8020.site4now.net;"
-    "DATABASE=db_ace096_sistemagestionentr;"
-    "UID=db_ace096_sistemagestionentr_admin;"
-    "PWD=Jasper@2017;"
+    f"DRIVER={{{os.getenv('DB_DRIVER')}}};"
+    f"SERVER={os.getenv('DB_SERVER')};"
+    f"DATABASE={os.getenv('DB_DATABASE')};"
+    f"UID={os.getenv('DB_USER')};"
+    f"PWD={os.getenv('DB_PASSWORD')};"
 )
 
 app.config["SQLALCHEMY_DATABASE_URI"] = (
