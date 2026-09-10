@@ -11,12 +11,18 @@ RUN apt-get update && apt-get install -y \
     && ACCEPT_EULA=Y apt-get install -y msodbcsql17 \
     && rm -rf /var/lib/apt/lists/*
 
+# Definir la raíz del proyecto
 WORKDIR /app
 
+# Instalar librerías de Python desde la raíz
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copiar todo el código del proyecto
 COPY . .
 
-# Apuntar gunicorn directamente al módulo app.py que está dentro de backend/
-CMD ["gunicorn", "backend.app:app"]
+# Cambiar la carpeta de trabajo directamente a backend
+WORKDIR /app/backend
+
+# Ejecutar gunicorn directamente sobre app.py
+CMD ["gunicorn", "app:app"]
