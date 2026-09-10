@@ -67,6 +67,10 @@ def pagina_productos():
 def pagina_pedidos():
     return render_template("pedidos.html")
 
+@app.route("/repartidores-pagina")
+def pagina_repartidores():
+    return render_template("repartidores.html")
+
 @app.route("/entregas-pagina")
 def pagina_entregas():
     return render_template("entregas.html")
@@ -1079,8 +1083,6 @@ def calcular_ruta_api():
             "error": str(e)
         }), 500
         
-        
-
 
 @app.route("/geocodificar", methods=["POST"])
 def geocodificar_direccion():
@@ -1137,10 +1139,14 @@ def geocodificar_direccion():
         )
 
 
+            # ==========================================
+        # LUGARES ESPECÍFICOS DE CERRO DE PASCO
+        # CON COORDENADAS GPS
         # ==========================================
-        # LUGAR ESPECÍFICO:
+
+        # ------------------------------------------
         # PLAZA DANIEL ALCIDES CARRIÓN
-        # ==========================================
+        # ------------------------------------------
 
         palabras_plaza = [
             "plaza daniel alcides carrion",
@@ -1155,33 +1161,17 @@ def geocodificar_direccion():
             for palabra in palabras_plaza
         )
 
-
         if es_plaza_daniel:
 
-            # Coordenadas verificadas de la plaza
             latitud = -10.68363
             longitud = -76.25615
 
-            print(
-                "=========================================="
-            )
-            print(
-                "DESTINO ESPECIAL DETECTADO"
-            )
-            print(
-                "Plaza Daniel Alcides Carrión"
-            )
-            print(
-                "Latitud:",
-                latitud
-            )
-            print(
-                "Longitud:",
-                longitud
-            )
-            print(
-                "=========================================="
-            )
+            print("==========================================")
+            print("DESTINO ESPECIAL DETECTADO")
+            print("Plaza Daniel Alcides Carrión")
+            print("Latitud:", latitud)
+            print("Longitud:", longitud)
+            print("==========================================")
 
             return jsonify({
                 "latitud": latitud,
@@ -1191,6 +1181,341 @@ def geocodificar_direccion():
                     "Cerro de Pasco, Pasco, Perú"
             })
 
+
+        # ------------------------------------------
+        # JR. YAULI
+        # Punto GPS: Jr. Yauli 180
+        # ------------------------------------------
+
+        palabras_yauli = [
+            "jr yauli",
+            "jiron yauli",
+            "jirón yauli",
+            "yauli 180"
+        ]
+
+        es_jr_yauli = any(
+            palabra in direccion_minuscula
+            for palabra in palabras_yauli
+        )
+
+        if es_jr_yauli:
+
+            latitud = -10.6850405
+            longitud = -76.2540167
+
+            print("==========================================")
+            print("DESTINO ESPECIAL DETECTADO")
+            print("Jr. Yauli")
+            print("Latitud:", latitud)
+            print("Longitud:", longitud)
+            print("==========================================")
+
+            return jsonify({
+                "latitud": latitud,
+                "longitud": longitud,
+                "direccion":
+                    "Jr. Yauli 180, Cerro de Pasco, Pasco, Perú"
+            })
+
+
+        # ------------------------------------------
+        # AV. CIRCUNVALACIÓN TÚPAC AMARU
+        # Referencia: frente a IE Daniel Alcides Carrión
+        # ------------------------------------------
+
+        palabras_tupac_amaru = [
+            "av circunvalacion tupac amaru",
+            "av. circunvalacion tupac amaru",
+            "avenida circunvalacion tupac amaru",
+            "circunvalacion tupac amaru",
+            "tupac amaru"
+        ]
+
+        es_tupac_amaru = any(
+            palabra in direccion_minuscula
+            for palabra in palabras_tupac_amaru
+        )
+
+        if es_tupac_amaru:
+
+            latitud = -10.687588
+            longitud = -76.253815
+
+            print("==========================================")
+            print("DESTINO ESPECIAL DETECTADO")
+            print("Av. Circunvalación Túpac Amaru")
+            print("Latitud:", latitud)
+            print("Longitud:", longitud)
+            print("==========================================")
+
+            return jsonify({
+                "latitud": latitud,
+                "longitud": longitud,
+                "direccion":
+                    "Av. Circunvalación Túpac Amaru, "
+                    "Cerro de Pasco, Pasco, Perú"
+            })
+
+
+        # ------------------------------------------
+        # AV. YAULI
+        # ------------------------------------------
+
+        palabras_av_yauli = [
+            "av yauli",
+            "av. yauli",
+            "avenida yauli"
+        ]
+
+        es_av_yauli = any(
+            palabra in direccion_minuscula
+            for palabra in palabras_av_yauli
+        )
+
+        if es_av_yauli:
+
+            latitud = -10.689241
+            longitud = -76.255939
+
+            print("==========================================")
+            print("DESTINO ESPECIAL DETECTADO")
+            print("Av. Yauli")
+            print("Latitud:", latitud)
+            print("Longitud:", longitud)
+            print("==========================================")
+
+            return jsonify({
+                "latitud": latitud,
+                "longitud": longitud,
+                "direccion":
+                    "Av. Yauli, Cerro de Pasco, Pasco, Perú"
+            })
+
+
+        # ------------------------------------------
+        # JR. EL COBRE
+        # Referencia: cerca al Parque Minero
+        # ------------------------------------------
+
+        palabras_el_cobre = [
+            "jr el cobre",
+            "jiron el cobre",
+            "jirón el cobre"
+        ]
+
+        es_el_cobre = any(
+            palabra in direccion_minuscula
+            for palabra in palabras_el_cobre
+        )
+
+        if es_el_cobre:
+
+            latitud = -10.687781
+            longitud = -76.256248
+
+            print("==========================================")
+            print("DESTINO ESPECIAL DETECTADO")
+            print("Jr. El Cobre")
+            print("Latitud:", latitud)
+            print("Longitud:", longitud)
+            print("==========================================")
+
+            return jsonify({
+                "latitud": latitud,
+                "longitud": longitud,
+                "direccion":
+                    "Jr. El Cobre, cerca al Parque Minero, "
+                    "Cerro de Pasco, Pasco, Perú"
+            })
+
+
+        # ------------------------------------------
+        # PASAJE JAUJA
+        # Referencia: cerca al Hospital Daniel Alcides Carrión
+        # ------------------------------------------
+
+        palabras_jauja = [
+            "pje jauja",
+            "pje. jauja",
+            "pasaje jauja"
+        ]
+
+        es_pje_jauja = any(
+            palabra in direccion_minuscula
+            for palabra in palabras_jauja
+        )
+
+        if es_pje_jauja:
+
+            latitud = -10.686990
+            longitud = -76.262333
+
+            print("==========================================")
+            print("DESTINO ESPECIAL DETECTADO")
+            print("Pasaje Jauja")
+            print("Latitud:", latitud)
+            print("Longitud:", longitud)
+            print("==========================================")
+
+            return jsonify({
+                "latitud": latitud,
+                "longitud": longitud,
+                "direccion":
+                    "Pasaje Jauja, cerca al Hospital Daniel "
+                    "Alcides Carrión, Cerro de Pasco, Pasco, Perú"
+            })
+
+
+        # ------------------------------------------
+        # JR. LAS AMÉRICAS
+        # Referencia: AA.HH. Tahuantinsuyo
+        # ------------------------------------------
+
+        palabras_las_americas = [
+            "jr las americas",
+            "jr. las americas",
+            "jiron las americas",
+            "jirón las americas",
+            "las americas"
+        ]
+
+        es_las_americas = any(
+            palabra in direccion_minuscula
+            for palabra in palabras_las_americas
+        )
+
+        if es_las_americas:
+
+            latitud = -10.683048
+            longitud = -76.243725
+
+            print("==========================================")
+            print("DESTINO ESPECIAL DETECTADO")
+            print("Jr. Las Américas")
+            print("Latitud:", latitud)
+            print("Longitud:", longitud)
+            print("==========================================")
+
+            return jsonify({
+                "latitud": latitud,
+                "longitud": longitud,
+                "direccion":
+                    "Jr. Las Américas, AA.HH. Tahuantinsuyo, "
+                    "Cerro de Pasco, Pasco, Perú"
+            })
+
+
+        # ------------------------------------------
+        # PASAJE PUMACAHUA
+        # Referencia: Sector 4 Uliachín
+        # ------------------------------------------
+
+        palabras_pumacahua = [
+            "pje pumacahua",
+            "pje. pumacahua",
+            "pasaje pumacahua"
+        ]
+
+        es_pumacahua = any(
+            palabra in direccion_minuscula
+            for palabra in palabras_pumacahua
+        )
+
+        if es_pumacahua:
+
+            latitud = -10.691444
+            longitud = -76.258925
+
+            print("==========================================")
+            print("DESTINO ESPECIAL DETECTADO")
+            print("Pasaje Pumacahua")
+            print("Latitud:", latitud)
+            print("Longitud:", longitud)
+            print("==========================================")
+
+            return jsonify({
+                "latitud": latitud,
+                "longitud": longitud,
+                "direccion":
+                    "Pasaje Pumacahua, Sector 4 Uliachín, "
+                    "Cerro de Pasco, Pasco, Perú"
+            })
+
+
+        # ------------------------------------------
+        # AV. EL ORO
+        # Referencia: Parque Minero
+        # ------------------------------------------
+
+        palabras_el_oro = [
+            "av el oro",
+            "av. el oro",
+            "avenida el oro"
+        ]
+
+        es_el_oro = any(
+            palabra in direccion_minuscula
+            for palabra in palabras_el_oro
+        )
+
+        if es_el_oro:
+
+            latitud = -10.688341
+            longitud = -76.256687
+
+            print("==========================================")
+            print("DESTINO ESPECIAL DETECTADO")
+            print("Av. El Oro")
+            print("Latitud:", latitud)
+            print("Longitud:", longitud)
+            print("==========================================")
+
+            return jsonify({
+                "latitud": latitud,
+                "longitud": longitud,
+                "direccion":
+                    "Av. El Oro, Parque Minero, "
+                    "Cerro de Pasco, Pasco, Perú"
+            })
+
+
+        # ------------------------------------------
+        # JR. COLUMNA PASCO
+        # Referencia: Yanacancha
+        # ------------------------------------------
+
+        palabras_columna_pasco = [
+            "jr columna pasco",
+            "jr. columna pasco",
+            "jiron columna pasco",
+            "jirón columna pasco"
+        ]
+
+        es_columna_pasco = any(
+            palabra in direccion_minuscula
+            for palabra in palabras_columna_pasco
+        )
+
+        if es_columna_pasco:
+
+            latitud = -10.667730
+            longitud = -76.256800
+
+            print("==========================================")
+            print("DESTINO ESPECIAL DETECTADO")
+            print("Jr. Columna Pasco")
+            print("Latitud:", latitud)
+            print("Longitud:", longitud)
+            print("==========================================")
+
+            return jsonify({
+                "latitud": latitud,
+                "longitud": longitud,
+                "direccion":
+                    "Jr. Columna Pasco, Yanacancha, "
+                    "Cerro de Pasco, Pasco, Perú"
+            })
 
         # ==========================================
         # PREPARAR BÚSQUEDA
@@ -1589,7 +1914,42 @@ def geocodificar_direccion():
         return jsonify({
             "error": str(e)
         }), 500
+        
 
+
+import pyodbc
+
+@app.route('/repartidores/<int:id>', methods=['PUT'])
+def actualizar_repartidor(id):
+    conexion = None
+    cursor = None
+    try:
+        datos = request.get_json()
+        nombre = datos.get('nombre')
+        telefono = datos.get('telefono')
+
+        # Coloca aquí tus datos reales de conexión
+        conexion = pyodbc.connect(
+            'DRIVER={SQL Server};SERVER=TU_SERVIDOR;DATABASE=TU_BD;UID=usuario;PWD=contraseña'
+        )
+        cursor = conexion.cursor()
+
+        sql = "UPDATE repartidores SET nombre = ?, telefono = ? WHERE id_repartidor = ?"
+        cursor.execute(sql, (nombre, telefono, id))
+
+        conexion.commit()
+        return jsonify({"mensaje": "Actualizado con éxito"}), 200
+
+    except Exception as e:
+        if conexion:
+            conexion.rollback()
+        print("Error en el servidor:", e)
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
 # ==========================================
 # EJECUTAR SERVIDOR
 # ==========================================
