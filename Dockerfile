@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-# Instalar dependencias del sistema y el driver ODBC 17 de Microsoft SQL Server
+# Instalar dependencias del sistema y el driver ODBC 17 para SQL Server
 RUN apt-get update && apt-get install -y \
     curl \
     gnupg2 \
@@ -18,4 +18,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["gunicorn", "app:app"]
+# Apuntar gunicorn directamente al módulo app.py que está dentro de backend/
+CMD ["gunicorn", "backend.app:app"]
