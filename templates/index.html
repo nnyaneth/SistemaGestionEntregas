@@ -20,7 +20,8 @@
         rel="stylesheet"
         href="{{ url_for('static', filename='css/estilos.css') }}"
     >
-
+<!-- Estilos del chatbot flotante -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
 </head>
 
 
@@ -323,9 +324,8 @@
             <!-- DASHBOARD -->
 
                 <a
-                    href="#"
+                    href="/dashboard"
                     class="menu-card dashboard-card"
-                    onclick="return false;"
                 >
 
                 <div class="card-icon">
@@ -398,7 +398,11 @@
 
     </footer>
 
+<!-- Chatbot flotante -->
+{% include 'componentes/chatbot.html' %}
 
+<!-- Funciones del chatbot -->
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
 </body>
 
 </html>
