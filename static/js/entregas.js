@@ -169,137 +169,195 @@ async function inicializarMapa() {
 }
 
 
-// ==========================================
-// CARGAR ENTREGAS
-// ==========================================
+ // ==========================================
+ // PAGINACIÓN Y FILTROS DE ENTREGAS
+ // ==========================================
 
-async function cargarEntregas() {
+ let paginaActual = 1;
+ let totalPaginas = 1;
+ let temporizadorBusqueda;
 
-    try {
+ // ==========================================
+ // CARGAR ENTREGAS
+ // ==========================================
 
-        const respuesta =
-            await fetch("/entregas");
+ async function cargarEntregas() {
 
+     try {
 
-        if (!respuesta.ok) {
+         const buscar = document.getElementById("buscarEntrega").value.trim();
+         const estado = document.getElementById("filtrarEstadoEntrega").value;
 
-            throw new Error(
-                "No se pudieron cargar las entregas."
-            );
+         const parametros = new URLSearchParams({
+             pagina: paginaActual,
+             buscar: buscar,
+             estado: estado
+         });
 
-        }
+         const respuesta = await fetch(`/entregas?${parametros}`);
 
+         if (!respuesta.ok) {
+             throw new Error("No se pudieron cargar las entregas.");
+         }
 
-        const entregas =
-            await respuesta.json();
+         const datos = await respuesta.json();
 
+         const entregas = datos.entregas;
 
-        const tabla =
-            document.getElementById(
-                "tablaEntregas"
-            );
+         paginaActual = datos.pagina_actual;
+         totalPaginas = datos.total_paginas;
 
+         const tabla = document.getElementById("tablaEntregas");
 
-        tabla.innerHTML = "";
+         tabla.innerHTML = "";
 
+         if (entregas.length === 0) {
 
-        entregas.forEach(entrega => {
+             tabla.innerHTML = `
+                 <tr>
+                     <td colspan="8" style="text-align:center;">
+                         No se encontraron entregas.
+                     </td>
+                 </tr>
+             `;
 
-            const fila = `
+         } else {
 
-                <tr>
+             entregas.forEach(entrega => {
 
-                    <td>
-                        ${entrega.id_entrega}
-                    </td>
+                 const fila = `
+                     <tr>
+                         <td>${entrega.id_entrega}</td>
+                         <td>${entrega.id_pedido}</td>
+                         <td>${entrega.id_repartidor}</td>
+                         <td>${entrega.direccion_destino}</td>
+                         <td>${entrega.distancia_km ?? "-"} km</td>
+                         <td>${entrega.duracion_min ?? "-"} min</td>
 
-                    <td>
-                        ${entrega.id_pedido}
-                    </td>
+                         <td>
+                             <select onchange="cambiarEstadoEntrega(${entrega.id_entrega}, this.value)">
 
-                    <td>
-                        ${entrega.id_repartidor}
-                    </td>
+                                 <option value="Pendiente"
+                                     ${entrega.estado === "Pendiente" ? "selected" : ""}>
+                                     Pendiente
+                                 </option>
 
-                    <td>
-                        ${entrega.direccion_destino}
-                    </td>
+                                 <option value="En camino"
+                                     ${entrega.estado === "En camino" ? "selected" : ""}>
+                                     En camino
+                                 </option>
 
-                    <td>
-                        ${entrega.distancia_km ?? "-"} km
-                    </td>
+                                 <option value="Entregado"
+                                     ${entrega.estado === "Entregado" ? "selected" : ""}>
+                                     Entregado
+                                 </option>
 
-                    <td>
-                        ${entrega.duracion_min ?? "-"} min
-                    </td>
+                             </select>
+                         </td>
 
-                    <td>
+                         <td>
+                             <button
+                                 type="button"
+                                 onclick="eliminarEntrega(${entrega.id_entrega})">
+                                 Eliminar
+                             </button>
+                         </td>
+                     </tr>
+                 `;
 
-                        <select
-                            onchange="cambiarEstadoEntrega(
-                                ${entrega.id_entrega},
-                                this.value
-                            )"
-                        >
+                 tabla.insertAdjacentHTML("beforeend", fila);
 
-                            <option
-                                value="Pendiente"
-                                ${entrega.estado === "Pendiente" ? "selected" : ""}
-                            >
-                                Pendiente
-                            </option>
+             });
 
-                            <option
-                                value="En camino"
-                                ${entrega.estado === "En camino" ? "selected" : ""}
-                            >
-                                En camino
-                            </option>
+         }
 
-                            <option
-                                value="Entregado"
-                                ${entrega.estado === "Entregado" ? "selected" : ""}
-                            >
-                                Entregado
-                            </option>
+         // ACTUALIZAR INDICADOR
 
-                        </select>
+         document.getElementById("informacionPaginaEntrega").textContent =
+             `Página ${paginaActual} de ${totalPaginas} | ${datos.total_registros} entregas`;
 
-                    </td>
+         // ACTIVAR O DESACTIVAR BOTONES
 
-                    <td>
+         document.getElementById("btnAnteriorEntrega").disabled =
+             paginaActual <= 1;
 
-                        <button
-                            type="button"
-                            onclick="eliminarEntrega(
-                                ${entrega.id_entrega}
-                            )"
-                        >
-                            Eliminar
-                        </button>
+         document.getElementById("btnSiguienteEntrega").disabled =
+             paginaActual >= totalPaginas;
 
-                    </td>
+     } catch (error) {
 
-                </tr>
+         console.error("Error al cargar entregas:", error);
 
-            `;
+     }
 
+ }
 
-            tabla.innerHTML += fila;
+ // ==========================================
+ // CAMBIAR DE PÁGINA
+ // ==========================================
 
-        });
+ function cambiarPaginaEntrega(direccion) {
 
+     const nuevaPagina = paginaActual + direccion;
 
-    } catch (error) {
+     if (nuevaPagina < 1 || nuevaPagina > totalPaginas) {
+         return;
+     }
 
-        console.error(
-            "Error al cargar entregas:",
-            error
-        );
+     paginaActual = nuevaPagina;
 
-    }
+     cargarEntregas();
 
-}
+ }
+
+ // ==========================================
+ // RESTABLECER ENTREGAS
+ // ==========================================
+
+ function restablecerEntregas() {
+
+     clearTimeout(temporizadorBusqueda);
+
+     document.getElementById("buscarEntrega").value = "";
+
+     document.getElementById("filtrarEstadoEntrega").value = "";
+
+     paginaActual = 1;
+
+     cargarEntregas();
+
+ }
+
+ // ==========================================
+ // BUSCAR ENTREGAS
+ // ==========================================
+
+ document.getElementById("buscarEntrega").addEventListener("input", function() {
+
+     clearTimeout(temporizadorBusqueda);
+
+     temporizadorBusqueda = setTimeout(() => {
+
+         paginaActual = 1;
+
+         cargarEntregas();
+
+     }, 350);
+
+ });
+
+ // ==========================================
+ // FILTRAR POR ESTADO
+ // ==========================================
+
+ document.getElementById("filtrarEstadoEntrega").addEventListener("change", function() {
+
+     paginaActual = 1;
+
+     cargarEntregas();
+
+ });
+
 
 
 // ==========================================
