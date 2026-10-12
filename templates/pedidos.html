@@ -22,7 +22,8 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 >
 ```
-
+<!-- Estilos del chatbot flotante -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
 </head>
 
 <body class="modulo-body">
@@ -465,6 +466,47 @@
 
 
 
+<!-- ==========================================
+     BUSCAR Y FILTRAR PEDIDOS
+========================================== -->
+
+<div class="controles-pedidos">
+
+    <div class="busqueda-pedidos">
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+        <input
+            type="text"
+            id="buscarPedido"
+            placeholder="Buscar por ID de pedido o cliente..."
+        >
+    </div>
+
+    <div class="filtro-pedidos">
+        <i class="fa-solid fa-filter"></i>
+
+        <select id="filtroEstadoPedido">
+            <option value="">Todos los estados</option>
+            <option value="Pendiente">Pendiente</option>
+            <option value="En camino">En camino</option>
+            <option value="Entregado">Entregado</option>
+            <option value="Cancelado">Cancelado</option>
+        </select>
+    </div>
+
+    <button
+        type="button"
+        id="restablecerPedidos"
+        class="boton-restablecer-pedidos"
+    >
+        <i class="fa-solid fa-rotate-right"></i>
+        Restablecer
+    </button>
+
+</div>
+
+
+
     <div class="tabla-contenedor">
 
         <table>
@@ -507,6 +549,38 @@
     </div>
 
 
+
+<!-- ==========================================
+     PAGINACIÓN DE PEDIDOS
+========================================== -->
+
+<div class="paginacion-pedidos">
+
+    <button
+        type="button"
+        id="anteriorPedidos"
+        onclick="cambiarPaginaPedidos(-1)"
+    >
+        <i class="fa-solid fa-chevron-left"></i>
+        Anterior
+    </button>
+
+    <span id="infoPaginaPedidos">
+        Página 1
+    </span>
+
+    <button
+        type="button"
+        id="siguientePedidos"
+        onclick="cambiarPaginaPedidos(1)"
+    >
+        Siguiente
+        <i class="fa-solid fa-chevron-right"></i>
+    </button>
+
+</div>
+
+
 </section>
 ```
 
@@ -540,7 +614,11 @@
 <script
     src="{{ url_for('static', filename='js/pedidos.js') }}"
 ></script>
+<!-- Chatbot flotante -->
+{% include 'componentes/chatbot.html' %}
 
+<!-- Funciones del chatbot -->
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
 </body>
 
 </html>
