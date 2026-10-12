@@ -23,7 +23,8 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 >
 ```
-
+<!-- Estilos del chatbot flotante -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
 </head>
 
 <body class="modulo-body">
@@ -419,7 +420,11 @@
     src="{{ url_for('static', filename='js/productos.js') }}">
 </script>
 ```
+<!-- Chatbot flotante -->
+{% include 'componentes/chatbot.html' %}
 
+<!-- Funciones del chatbot -->
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
 </body>
 
 </html>
