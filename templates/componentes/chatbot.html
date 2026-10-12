@@ -1,0 +1,49 @@
+
+<!-- CHATBOT FLOTANTE -->
+
+<div id="chatbot-flotante">
+
+    <!-- Ventana de conversación -->
+    <div id="ventana-chatbot" class="ventana-chatbot">
+
+        <div class="chatbot-encabezado">
+            <div class="chatbot-titulo">
+                <i class="bi bi-robot"></i>
+                <span>Asistente inteligente</span>
+            </div>
+
+            <button type="button" id="cerrar-chatbot">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <div id="mensajes-chatbot" class="chatbot-mensajes">
+            <div class="mensaje-bot">
+                ¡Hola! Soy tu asistente de gestión de entregas.
+                ¿En qué puedo ayudarte?
+            </div>
+        </div>
+
+        <form id="formulario-chatbot" class="chatbot-formulario">
+            <input
+                type="text"
+                id="pregunta-chatbot"
+                placeholder="Escribe tu pregunta..."
+                autocomplete="off"
+                maxlength="2000"
+                required
+            >
+
+            <button type="submit" id="enviar-chatbot">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </form>
+
+    </div>
+
+    <!-- Botón flotante -->
+    <button type="button" id="boton-chatbot">
+        <i class="bi bi-chat-dots-fill"></i>
+    </button>
+
+</div>
