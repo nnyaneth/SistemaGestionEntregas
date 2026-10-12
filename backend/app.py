@@ -8,10 +8,22 @@ from flask import Flask, jsonify, request, render_template
 from datetime import datetime
 from sqlalchemy import text
 from urllib.parse import quote_plus
+from sqlalchemy import or_
 
 from extensions import db
 from models import Cliente, Producto, Pedido, DetallePedido, Repartidor, Entrega
 from rutas import calcular_ruta
+from prediccion_demanda import predecir_demanda
+from chatbot import responder_chatbot
+from consultas_chatbot import (
+    consultar_resumen_entregas,
+    consultar_productos,
+    consultar_pedidos,
+    consultar_repartidores,
+    consultar_ventas,
+    buscar_pedido,
+    buscar_entrega
+)
 
 import requests
 
@@ -365,8 +377,9 @@ def eliminar_producto(id):
     })
     
     
+
 # ==========================================
-# OBTENER PEDIDOS
+# OBTENER PEDIDOS CON PAGINACIÓN
 # ==========================================
 
 @app.route("/pedidos", methods=["GET"])
@@ -374,11 +387,84 @@ def obtener_pedidos():
 
     try:
 
-        pedidos = Pedido.query.all()
+        pagina = request.args.get(
+            "pagina", 1, type=int
+        )
+
+        pagina = max(pagina, 1)
+
+        por_pagina = 50
+
+        busqueda = request.args.get(
+            "buscar", ""
+        ).strip()
+
+        estado = request.args.get(
+            "estado", ""
+        ).strip()
+
+        # ------------------------------------------
+        # CONSULTA PRINCIPAL
+        # ------------------------------------------
+
+        consulta = Pedido.query
+
+        # ------------------------------------------
+        # FILTRAR POR ESTADO
+        # ------------------------------------------
+
+        if estado:
+
+            consulta = consulta.filter(
+                Pedido.estado == estado
+            )
+
+        # ------------------------------------------
+        # BUSCAR POR ID DE PEDIDO O CLIENTE
+        # ------------------------------------------
+
+        if busqueda:
+
+            if busqueda.isdigit():
+
+                numero = int(busqueda)
+
+                consulta = consulta.filter(
+                    or_(
+                        Pedido.id_pedido == numero,
+                        Pedido.id_cliente == numero
+                    )
+                )
+
+            else:
+
+                consulta = consulta.filter(
+                    Pedido.estado.ilike(
+                        f"%{busqueda}%"
+                    )
+                )
+
+        # ------------------------------------------
+        # ORDENAR Y PAGINAR
+        # ------------------------------------------
+
+        consulta = consulta.order_by(
+            Pedido.id_pedido.asc()
+        )
+
+        resultado = consulta.paginate(
+            page=pagina,
+            per_page=por_pagina,
+            error_out=False
+        )
+
+        # ------------------------------------------
+        # PREPARAR PEDIDOS
+        # ------------------------------------------
 
         lista_pedidos = []
 
-        for pedido in pedidos:
+        for pedido in resultado.items:
 
             lista_pedidos.append({
                 "id_pedido": pedido.id_pedido,
@@ -388,14 +474,23 @@ def obtener_pedidos():
                 "estado": pedido.estado
             })
 
-        return jsonify(lista_pedidos)
+        return jsonify({
+            "pedidos": lista_pedidos,
+            "pagina": resultado.page,
+            "total_paginas": resultado.pages,
+            "total_registros": resultado.total,
+            "tiene_anterior": resultado.has_prev,
+            "tiene_siguiente": resultado.has_next
+        })
 
     except Exception as e:
 
+        print("Error al obtener pedidos:", str(e))
+
         return jsonify({
-            "error": str(e)
+            "error": "No se pudieron cargar los pedidos."
         }), 500
-        
+
         
 # ==========================================
 # OBTENER DETALLES DE UN PEDIDO
@@ -675,15 +770,110 @@ def crear_repartidor():
 
         }), 500
         
+
 # ==========================================
-# OBTENER ENTREGAS
+# OBTENER ENTREGAS CON PAGINACIÓN Y FILTROS
 # ==========================================
+
 @app.route("/entregas", methods=["GET"])
 def obtener_entregas():
 
     try:
 
-        entregas = Entrega.query.all()
+        # ==========================================
+        # DATOS DE PAGINACIÓN
+        # ==========================================
+
+        pagina = request.args.get("pagina", 1, type=int)
+        pagina = max(1, pagina)
+
+        limite = 50
+
+        # ==========================================
+        # BUSCADOR Y FILTRO
+        # ==========================================
+
+        buscar = request.args.get("buscar", "").strip()
+        estado = request.args.get("estado", "").strip()
+
+        consulta = Entrega.query
+
+
+        # ==========================================
+        # BUSCAR ENTREGAS
+        # ==========================================
+
+        from sqlalchemy import or_, cast, String, case
+
+        if buscar:
+
+            consulta = consulta.filter(
+                or_(
+                    cast(Entrega.id_entrega, String).like(f"%{buscar}%"),
+                    cast(Entrega.id_pedido, String).like(f"%{buscar}%"),
+                    Entrega.direccion_destino.ilike(f"%{buscar}%")
+                )
+            )
+
+            # Si es un número, priorizar el ID exacto
+            if buscar.isdigit():
+
+                orden = case(
+                    (Entrega.id_entrega == int(buscar), 0),
+                    else_=1
+                )
+
+                consulta = consulta.order_by(
+                    orden,
+                    Entrega.id_entrega.asc()
+                )
+
+            else:
+
+                consulta = consulta.order_by(
+                    Entrega.id_entrega.asc()
+                )
+
+        else:
+
+            consulta = consulta.order_by(
+                Entrega.id_entrega.asc()
+            )
+
+
+
+        # Filtrar por estado
+        if estado in ["Pendiente", "En camino", "Entregado"]:
+
+            consulta = consulta.filter(
+                Entrega.estado == estado
+            )
+
+        # ==========================================
+        # TOTAL DE REGISTROS FILTRADOS
+        # ==========================================
+
+        total = consulta.count()
+
+        total_paginas = max(
+            1,
+            (total + limite - 1) // limite
+        )
+
+        # Evitar páginas fuera del rango
+        pagina = min(pagina, total_paginas)
+
+        # ==========================================
+        # OBTENER SOLO 50 REGISTROS
+        # ORDENADOS DESDE EL ID MÁS PEQUEÑO
+        # ==========================================
+
+        entregas = (
+    consulta
+    .limit(limite)
+    .offset((pagina - 1) * limite)
+    .all()
+)
 
         lista_entregas = []
 
@@ -698,33 +888,42 @@ def obtener_entregas():
 
                 "latitud_destino":
                     float(entrega.latitud_destino)
-                    if entrega.latitud_destino else None,
+                    if entrega.latitud_destino is not None else None,
 
                 "longitud_destino":
                     float(entrega.longitud_destino)
-                    if entrega.longitud_destino else None,
+                    if entrega.longitud_destino is not None else None,
 
                 "distancia_km":
                     float(entrega.distancia_km)
-                    if entrega.distancia_km else None,
+                    if entrega.distancia_km is not None else None,
 
                 "duracion_min": entrega.duracion_min,
                 "estado": entrega.estado,
 
-                "fecha_asignacion":
-                    entrega.fecha_asignacion,
-
-                "fecha_entrega":
-                    entrega.fecha_entrega
+                "fecha_asignacion": entrega.fecha_asignacion,
+                "fecha_entrega": entrega.fecha_entrega
             })
 
-        return jsonify(lista_entregas)
+        return jsonify({
+
+            "entregas": lista_entregas,
+
+            "pagina_actual": pagina,
+
+            "total_paginas": total_paginas,
+
+            "total_registros": total,
+
+            "limite": limite
+        })
 
     except Exception as e:
 
         return jsonify({
             "error": str(e)
         }), 500
+
         
 @app.route("/entregas", methods=["POST"])
 def crear_entrega():
@@ -1950,6 +2149,313 @@ def actualizar_repartidor(id):
             cursor.close()
         if conexion:
             conexion.close()
+            
+            
+
+# ==========================================
+# MACHINE LEARNING - PREDICCIÓN DE DEMANDA
+# ==========================================
+
+@app.route('/predecir-demanda', methods=['POST'])
+def predecir_demanda_producto():
+    try:
+        datos = request.get_json(silent=True)
+
+        if not isinstance(datos, dict):
+            return jsonify({
+                "error": "Debes enviar los datos en formato JSON"
+            }), 400
+
+        campos = [
+            "id_producto",
+            "dia_semana",
+            "dia_mes",
+            "ventas_ayer",
+            "ventas_hace_7_dias",
+            "promedio_7_dias"
+        ]
+
+        for campo in campos:
+            if campo not in datos or datos[campo] is None:
+                return jsonify({
+                    "error": f"Falta el campo: {campo}"
+                }), 400
+
+        # Realizar predicción con el modelo entrenado
+        resultado = predecir_demanda(
+            int(datos["id_producto"]),
+            int(datos["dia_semana"]),
+            int(datos["dia_mes"]),
+            float(datos["ventas_ayer"]),
+            float(datos["ventas_hace_7_dias"]),
+            float(datos["promedio_7_dias"])
+        )
+
+        return jsonify({
+            "id_producto": int(datos["id_producto"]),
+            "demanda_estimada": resultado,
+            "unidad": "unidades",
+            "tipo_modelo": "Random Forest",
+            "origen_entrenamiento": "datos sintéticos"
+        }), 200
+
+    except (ValueError, TypeError):
+        return jsonify({
+            "error": "Los datos enviados deben ser numéricos"
+        }), 400
+
+    except Exception as e:
+        print("Error en predicción de demanda:", e)
+        return jsonify({
+            "error": "No se pudo realizar la predicción"
+        }), 500
+
+
+
+# ==========================================
+# DASHBOARD - MACHINE LEARNING
+# ==========================================
+
+@app.route('/dashboard')
+def dashboard_pagina():
+
+    # Obtener los productos de SQL Server
+    productos = Producto.query.all()
+
+    # Predicción de prueba
+    demanda_estimada = predecir_demanda(
+        id_producto=1,
+        dia_semana=3,
+        dia_mes=1,
+        ventas_ayer=15,
+        ventas_hace_7_dias=13,
+        promedio_7_dias=16.5
+    )
+
+    return render_template(
+        'dashboard.html',
+        demanda_estimada=demanda_estimada,
+        productos=productos
+    )
+    
+
+
+# ==========================================
+# CHATBOT CON INTELIGENCIA ARTIFICIAL
+# ==========================================
+
+@app.route("/chatbot", methods=["POST"])
+def consultar_chatbot():
+
+    try:
+        datos = request.get_json(silent=True) or {}
+
+        pregunta = datos.get("pregunta", "")
+        historial = datos.get("historial", [])
+
+        # ==========================================
+        # VALIDAR PREGUNTA
+        # ==========================================
+
+        if not isinstance(pregunta, str) or not pregunta.strip():
+            return jsonify({
+                "error": "Debes escribir una pregunta."
+            }), 400
+
+        if len(pregunta) > 2000:
+            return jsonify({
+                "error": "La pregunta es demasiado extensa."
+            }), 400
+
+        if not isinstance(historial, list):
+            historial = []
+
+        # ==========================================
+        # CONSULTAR DATOS REALES DE ENTREGAS
+        # ==========================================
+
+        resumen = consultar_resumen_entregas()
+        
+        # ==========================================
+        # CONSULTAR PRODUCTOS
+        # ==========================================
+
+        datos_productos = consultar_productos()
+
+        lista_productos = "\n".join(
+            f"ID: {producto['id_producto']}, "
+            f"Nombre: {producto['nombre']}, "
+            f"Precio: S/ {producto['precio']:.2f}, "
+            f"Stock: {producto['stock']}"
+            for producto in datos_productos["productos"][:100]
+        )
+        
+        
+        # ==========================================
+        # CONSULTAR PEDIDOS Y REPARTIDORES
+        # ==========================================
+
+        datos_pedidos = consultar_pedidos()
+        datos_repartidores = consultar_repartidores()
+
+        estados_pedidos = "\n".join(
+            f"{estado}: {cantidad}"
+            for estado, cantidad in datos_pedidos["estados"].items()
+        )
+
+        lista_repartidores = "\n".join(
+            f"Nombre: {repartidor['nombre']}, "
+            f"Estado: {repartidor['estado']}"
+            for repartidor in datos_repartidores["repartidores"][:100]
+        )
+
+        datos_ventas = consultar_ventas()
+        
+        
+        # ==========================================
+        # BUSCAR PEDIDOS Y ENTREGAS POR ID
+        # ==========================================
+
+        import re
+        import json
+
+        consulta_especifica = ""
+
+        # Buscar preguntas sobre pedidos
+        coincidencia_pedido = re.search(
+            r"\bpedido\s*(?:n[°ºo.]?\s*|#\s*|id\s*[:#]?\s*)?(\d+)\b",
+            pregunta,
+            re.IGNORECASE
+        )
+
+        # Buscar preguntas sobre entregas
+        coincidencia_entrega = re.search(
+            r"\bentrega\s*(?:n[°ºo.]?\s*|#\s*|id\s*[:#]?\s*)?(\d+)\b",
+            pregunta,
+            re.IGNORECASE
+        )
+
+        if coincidencia_pedido:
+
+            id_pedido = int(coincidencia_pedido.group(1))
+            pedido = buscar_pedido(id_pedido)
+
+            consulta_especifica += (
+                "\nRESULTADO DE BÚSQUEDA DE PEDIDO:\n"
+                + json.dumps(pedido, ensure_ascii=False)
+                + "\n"
+            )
+
+        if coincidencia_entrega:
+
+            id_entrega = int(coincidencia_entrega.group(1))
+            entrega = buscar_entrega(id_entrega)
+
+            consulta_especifica += (
+                "\nRESULTADO DE BÚSQUEDA DE ENTREGA:\n"
+                + json.dumps(entrega, ensure_ascii=False)
+                + "\n"
+            )
+
+        
+        contexto = f"""
+        INFORMACIÓN REAL DEL SISTEMA:
+
+        ENTREGAS:
+        Total de entregas: {resumen['total_entregas']}
+        Entregas pendientes: {resumen['pendientes']}
+        Entregas en camino: {resumen['en_camino']}
+        Entregas entregadas: {resumen['entregadas']}
+
+        PRODUCTOS:
+        Total de productos: {datos_productos['total_productos']}
+
+        Inventario registrado:
+        {lista_productos}
+        
+        
+        PEDIDOS:
+        Total de pedidos: {datos_pedidos['total_pedidos']}
+
+        Pedidos por estado:
+        {estados_pedidos}
+
+        REPARTIDORES:
+        Total de repartidores: {datos_repartidores['total_repartidores']}
+
+        Repartidores registrados:
+        {lista_repartidores}
+        
+        
+        VENTAS:
+        Importe total de pedidos registrados: S/ {datos_ventas['ventas_totales']:.2f}
+        Importe de pedidos registrados hoy: S/ {datos_ventas['ventas_hoy']:.2f}
+        Cantidad de pedidos registrados hoy: {datos_ventas['pedidos_hoy']}
+
+        Estos importes incluyen pedidos de todos los estados.
+        No los presentes como dinero efectivamente cobrado.
+        
+        CONSULTAS ESPECÍFICAS:
+        {consulta_especifica}
+
+        Si el resultado de una búsqueda es null,
+        indica que no se encontró el registro solicitado.
+
+        No inventes datos de pedidos ni entregas.
+                
+        INSTRUCCIONES:
+        Utiliza únicamente los datos proporcionados
+        para responder preguntas sobre entregas y productos.
+
+        Si preguntan por productos con poco stock,
+        considera provisionalmente menos de 10 unidades.
+
+        Si preguntan por productos agotados,
+        identifica aquellos que tengan stock igual a 0.
+
+        No inventes cantidades, precios ni productos.
+
+        Si no tienes información suficiente para responder,
+        indica que todavía no dispones de esos datos.
+        """
+
+
+        # ==========================================
+        # PREPARAR CONSULTA PARA LA IA
+        # ==========================================
+
+        pregunta_completa = f"""
+        {contexto}
+
+        PREGUNTA DEL ADMINISTRADOR:
+        {pregunta}
+        """
+
+        # ==========================================
+        # CONSULTAR A GROQ
+        # ==========================================
+
+        respuesta = responder_chatbot(
+            pregunta_completa,
+            historial
+        )
+
+        return jsonify({
+            "respuesta": respuesta
+        })
+
+    except Exception as error:
+
+        print("Error en el chatbot:", type(error).__name__)
+
+        return jsonify({
+            "error": (
+                "No se pudo obtener una respuesta del chatbot. "
+                "Comprueba la conexión e inténtalo nuevamente."
+            )
+        }), 503
+
+
 # ==========================================
 # EJECUTAR SERVIDOR
 # ==========================================
