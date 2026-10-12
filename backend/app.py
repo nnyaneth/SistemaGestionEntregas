@@ -2446,14 +2446,16 @@ def consultar_chatbot():
 
     except Exception as error:
 
-        print("Error en el chatbot:", type(error).__name__)
+        import traceback
+
+        print("========== ERROR DEL CHATBOT ==========", flush=True)
+        print("Tipo:", type(error).__name__, flush=True)
+        print("Detalle:", str(error), flush=True)
+        traceback.print_exc()
 
         return jsonify({
-            "error": (
-                "No se pudo obtener una respuesta del chatbot. "
-                "Comprueba la conexión e inténtalo nuevamente."
-            )
-        }), 503
+            "error": "Ocurrió un error interno al procesar la consulta."
+        }), 500
 
 
 # ==========================================
