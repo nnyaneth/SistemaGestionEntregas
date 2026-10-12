@@ -1,0 +1,1284 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | Sistema de Gestión</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/estilos.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* ==========================================
+           DASHBOARD - ESTILOS COMPLEMENTARIOS
+           ========================================== */
+
+        body.modulo-body.dashboard-body {
+            min-height: 100vh;
+            height: auto;
+            overflow: auto;
+            background: var(--crema);
+            color: var(--texto);
+        }
+
+        .dashboard-body .modulo-container {
+            width: min(1250px, calc(100% - 70px));
+            padding-top: 110px;
+            padding-bottom: 50px;
+        }
+
+        /* INDICADORES */
+
+        .dashboard-indicadores {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .dashboard-indicador {
+            background: #ffffff;
+            border: 1px solid var(--borde);
+            border-radius: 14px;
+            padding: 23px;
+            box-shadow: 0 3px 15px rgba(40,35,30,0.035);
+        }
+
+        .dashboard-indicador-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 19px;
+        }
+
+        .dashboard-indicador-top span {
+            color: var(--texto-secundario);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .dashboard-indicador-icono {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: var(--rojo-suave);
+            color: var(--rojo);
+            font-size: 19px;
+            flex-shrink: 0;
+        }
+
+        .dashboard-indicador-icono.amarillo {
+            background: var(--amarillo-suave);
+            color: #92701f;
+        }
+
+        .dashboard-indicador h3 {
+            margin: 0 0 7px;
+            color: var(--texto);
+            font-family: "Manrope", sans-serif;
+            font-size: 29px;
+            font-weight: 800;
+        }
+
+        .dashboard-indicador p {
+            color: var(--texto-suave);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        /* DISTRIBUCIÓN DE PANELES */
+
+        .dashboard-columnas {
+            display: grid;
+            grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr);
+            gap: 23px;
+            margin-bottom: 25px;
+        }
+
+        .dashboard-columnas-inferior {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(300px, 1fr);
+            gap: 23px;
+        }
+
+        .dashboard-body .card-panel {
+            min-width: 0;
+            margin-bottom: 0;
+            padding: 25px;
+            border: 1px solid var(--borde);
+            border-radius: 14px;
+            background: #ffffff;
+        }
+
+        .dashboard-body .card-panel-header {
+            margin-bottom: 22px;
+        }
+
+        .dashboard-body .panel-icon-badge {
+            background: var(--rojo-suave);
+            color: var(--rojo);
+        }
+
+        .dashboard-body .panel-icon-badge.amarillo {
+            background: var(--amarillo-suave);
+            color: #92701f;
+        }
+
+        /* GRÁFICO */
+
+        .dashboard-grafico {
+            position: relative;
+            height: 290px;
+            width: 100%;
+        }
+
+        .dashboard-etiqueta {
+            padding: 7px 10px;
+            border-radius: 6px;
+            background: var(--amarillo-suave);
+            color: #8a6a20;
+            font-size: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* PREDICCIÓN */
+
+        .dashboard-producto {
+            color: var(--texto-secundario);
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-resultado {
+            font-family: "Manrope", sans-serif;
+            font-size: 65px;
+            line-height: 1.1;
+            font-weight: 800;
+            color: var(--rojo);
+        }
+
+        .dashboard-unidad {
+            margin-top: 7px;
+            margin-bottom: 25px;
+            color: var(--texto-suave);
+            font-size: 13px;
+        }
+
+        .dashboard-detalles {
+            border-top: 1px solid var(--borde);
+            padding-top: 17px;
+        }
+
+        .dashboard-detalle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            font-size: 12px;
+        }
+
+        .dashboard-detalle span {
+            color: var(--texto-secundario);
+        }
+
+        .dashboard-detalle strong {
+            color: var(--texto);
+            font-weight: 700;
+            text-align: right;
+        }
+
+        /* INFORMACIÓN DEL MODELO */
+
+        .dashboard-descripcion {
+            color: var(--texto-secundario);
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .dashboard-aviso {
+            display: flex;
+            gap: 11px;
+            align-items: flex-start;
+            margin-top: 20px;
+            padding: 16px;
+            background: var(--amarillo-suave);
+            border: 1px solid #eadcb1;
+            border-radius: 9px;
+            color: #80651f;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .dashboard-aviso i {
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+
+        /* TABLA DE MÉTRICAS */
+
+        .dashboard-metricas {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .dashboard-metricas td {
+            padding: 13px 5px;
+            border-bottom: 1px solid var(--borde);
+            font-size: 12px;
+            background: transparent;
+        }
+
+        .dashboard-metricas td:first-child {
+            color: var(--texto-secundario);
+        }
+
+        .dashboard-metricas td:last-child {
+            text-align: right;
+            color: var(--texto);
+            font-weight: 700;
+        }
+
+        /* PIE */
+
+        .dashboard-body .modulo-footer {
+            margin-top: auto;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1100px) {
+            .dashboard-indicadores {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .dashboard-columnas,
+            .dashboard-columnas-inferior {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .dashboard-body .modulo-container {
+                width: calc(100% - 24px);
+                padding-top: 90px;
+            }
+
+            .dashboard-indicadores {
+                gap: 12px;
+            }
+
+            .dashboard-indicador {
+                padding: 16px;
+            }
+
+            .dashboard-indicador h3 {
+                font-size: 24px;
+            }
+
+            .dashboard-body .card-panel {
+                padding: 18px;
+            }
+
+            .dashboard-grafico {
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .dashboard-indicadores {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-resultado {
+                font-size: 52px;
+            }
+        }
+
+        
+/* ==========================================
+   SELECCIÓN DE PRODUCTOS
+   ========================================== */
+
+.dashboard-seleccion {
+    margin-bottom: 25px !important;
+}
+
+.dashboard-seleccion-contenido {
+    display: flex;
+    align-items: end;
+    gap: 18px;
+}
+
+.dashboard-seleccion-contenido .campo {
+    flex: 1;
+    margin: 0;
+    gap: 8px;
+}
+
+.dashboard-seleccion-contenido .campo label {
+    font-size: 12px;
+    color: var(--texto-secundario);
+    font-weight: 600;
+}
+
+.dashboard-seleccion-contenido .input-contenedor {
+    height: 44px;
+}
+
+.dashboard-seleccion-contenido .boton-principal {
+    height: 44px;
+    white-space: nowrap;
+}
+
+@media (max-width: 650px) {
+
+    .dashboard-seleccion-contenido {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .dashboard-seleccion-contenido .campo,
+    .dashboard-seleccion-contenido .boton-principal {
+        width: 100%;
+    }
+
+}
+
+
+/* ==========================================
+   FORMULARIO DE PREDICCIÓN
+   ========================================== */
+
+.dashboard-formulario {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.dashboard-formulario .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+}
+
+.dashboard-formulario .campo label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--texto-secundario);
+}
+
+.dashboard-formulario .input-contenedor {
+    height: 44px;
+}
+
+.dashboard-formulario input,
+.dashboard-formulario select {
+    width: 100%;
+}
+
+.dashboard-acciones {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 23px;
+    padding-top: 20px;
+    border-top: 1px solid var(--borde);
+}
+
+.dashboard-acciones .boton-principal {
+    min-height: 44px;
+}
+
+@media (max-width: 650px) {
+
+    .dashboard-formulario {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-acciones .boton-principal {
+        width: 100%;
+    }
+
+}
+
+
+    </style>
+<!-- Estilos del chatbot flotante -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+</head>
+
+<body class="modulo-body dashboard-body">
+
+    <!-- ==========================================
+         ENCABEZADO
+         ========================================== -->
+
+    <header class="modulo-header">
+
+        <div class="modulo-identidad">
+
+            <a href="/" class="volver-menu"
+               title="Volver al menú principal">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+
+            <div class="modulo-icono">
+                <i class="bi bi-bar-chart-line"></i>
+            </div>
+
+            <div>
+                <span class="modulo-seccion">
+                    ANÁLISIS DE DATOS
+                </span>
+
+                <h1>Dashboard</h1>
+            </div>
+
+        </div>
+
+        <div class="header-status">
+            <span class="status-dot"></span>
+            Modelo cargado
+        </div>
+
+    </header>
+
+
+    <!-- ==========================================
+         CONTENIDO
+         ========================================== -->
+
+    <main class="modulo-container">
+
+        <!-- PRESENTACIÓN -->
+
+        <section class="modulo-intro">
+
+            <div class="intro-content">
+
+                <span class="intro-label">
+                    INTELIGENCIA DE NEGOCIO
+                </span>
+
+                <h2>Panel de análisis y predicción</h2>
+
+                <p>
+                    Consulta los indicadores del modelo
+                    predictivo y analiza la demanda estimada
+                    de los productos del negocio.
+                </p>
+
+            </div>
+
+            <div class="intro-marca">
+                <i class="bi bi-graph-up-arrow"></i>
+            </div>
+
+        </section>
+
+
+        <!-- ======================================
+             INDICADORES PRINCIPALES
+             ====================================== -->
+
+        <section class="dashboard-indicadores">
+
+            <div class="dashboard-indicador">
+
+                <div class="dashboard-indicador-top">
+                    <span>Demanda estimada</span>
+
+                    <div class="dashboard-indicador-icono">
+                        <i class="bi bi-cart-check"></i>
+                    </div>
+                </div>
+
+                <h3 id="indicadorDemanda">{{ demanda_estimada }}</h3>
+
+<p id="indicadorProducto">
+    Hamburguesa Clásica
+</p>
+
+            </div>
+
+
+            <div class="dashboard-indicador">
+
+                <div class="dashboard-indicador-top">
+                    <span>Coeficiente R²</span>
+
+                    <div class="dashboard-indicador-icono amarillo">
+                        <i class="bi bi-bullseye"></i>
+                    </div>
+                </div>
+
+                <h3>0.493</h3>
+
+                <p>Evaluación con datos sintéticos</p>
+
+            </div>
+
+
+            <div class="dashboard-indicador">
+
+                <div class="dashboard-indicador-top">
+                    <span>Error medio absoluto</span>
+
+                    <div class="dashboard-indicador-icono">
+                        <i class="bi bi-activity"></i>
+                    </div>
+                </div>
+
+                <h3>3.709</h3>
+
+                <p>MAE expresado en unidades</p>
+
+            </div>
+
+
+            <div class="dashboard-indicador">
+
+                <div class="dashboard-indicador-top">
+                    <span>Algoritmo utilizado</span>
+
+                    <div class="dashboard-indicador-icono amarillo">
+                        <i class="bi bi-cpu"></i>
+                    </div>
+                </div>
+
+                <h3 style="font-size: 21px;">
+                    Random Forest
+                </h3>
+
+                <p>Modelo de regresión</p>
+
+            </div>
+
+        </section>
+
+
+<!-- ======================================
+     SELECCIÓN DE PRODUCTO
+     ====================================== -->
+
+
+<!-- ======================================
+     CONSULTA DE DEMANDA
+     ====================================== -->
+
+<section class="card-panel dashboard-seleccion">
+
+    <div class="card-panel-header">
+
+        <div class="panel-title-group">
+
+            <div class="panel-icon-badge">
+                <i class="bi bi-graph-up-arrow"></i>
+            </div>
+
+            <div>
+                <span class="panel-subtitle">
+                    MODELO RANDOM FOREST
+                </span>
+
+                <h3>Consultar demanda de productos</h3>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="dashboard-formulario">
+        
+<!-- FECHA DE PREDICCIÓN -->
+
+<div class="campo">
+
+    <label for="fechaPrediccion">
+        Fecha de predicción
+    </label>
+
+    <div class="input-contenedor">
+
+        <i class="bi bi-calendar-event"></i>
+
+        <input
+            type="date"
+            id="fechaPrediccion"
+            value="2026-10-01"
+            required
+        >
+
+    </div>
+
+</div>
+
+
+        <!-- PRODUCTO -->
+
+        <div class="campo">
+
+            <label for="productoDashboard">
+                Producto
+            </label>
+
+            <div class="input-contenedor">
+
+                <i class="bi bi-box-seam"></i>
+
+                <select id="productoDashboard">
+
+                    <option value="">
+                        Seleccione un producto
+                    </option>
+
+                    {% for producto in productos %}
+
+                    <option value="{{ producto.id_producto }}">
+                        {{ producto.nombre }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- VENTAS DE AYER -->
+
+        <div class="campo">
+
+            <label for="ventasAyer">
+                Ventas de ayer
+            </label>
+
+            <div class="input-contenedor">
+
+                <i class="bi bi-calendar-day"></i>
+
+                <input
+                    type="number"
+                    id="ventasAyer"
+                    min="0"
+                    step="1"
+                    value="15"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- VENTAS HACE 7 DÍAS -->
+
+        <div class="campo">
+
+            <label for="ventasSemana">
+                Ventas hace 7 días
+            </label>
+
+            <div class="input-contenedor">
+
+                <i class="bi bi-calendar-week"></i>
+
+                <input
+                    type="number"
+                    id="ventasSemana"
+                    min="0"
+                    step="1"
+                    value="13"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- PROMEDIO DE VENTAS -->
+
+        <div class="campo">
+
+            <label for="promedioVentas">
+                Promedio de los últimos 7 días
+            </label>
+
+            <div class="input-contenedor">
+
+                <i class="bi bi-calculator"></i>
+
+                <input
+                    type="number"
+                    id="promedioVentas"
+                    min="0"
+                    step="0.01"
+                    value="16.5"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="dashboard-acciones">
+
+        <button
+            type="button"
+            class="boton-principal"
+            id="botonPredecir"
+        >
+
+            <i class="bi bi-stars"></i>
+            Consultar demanda
+
+        </button>
+
+    </div>
+
+</section>
+
+
+        <!-- ======================================
+             GRÁFICO Y PREDICCIÓN
+             ====================================== -->
+
+        <section class="dashboard-columnas">
+
+            <!-- GRÁFICO -->
+
+            <div class="card-panel">
+
+                <div class="card-panel-header">
+
+                    <div class="panel-title-group">
+
+                        <div class="panel-icon-badge">
+                            <i class="bi bi-graph-up"></i>
+                        </div>
+
+                        <div>
+                            <span class="panel-subtitle">
+                                ANÁLISIS DE DEMANDA
+                            </span>
+
+                            <h3>Comparación de ventas y demanda estimada</h3>
+                        </div>
+
+                    </div>
+
+                    <span class="dashboard-etiqueta">
+    Predicción Random Forest
+</span>
+
+                </div>
+
+                <div class="dashboard-grafico">
+                    <canvas id="graficoDemanda"></canvas>
+                </div>
+
+            </div>
+
+
+            <!-- PREDICCIÓN -->
+
+            <div class="card-panel">
+
+                <div class="card-panel-header">
+
+                    <div class="panel-title-group">
+
+                        <div class="panel-icon-badge amarillo">
+                            <i class="bi bi-stars"></i>
+                        </div>
+
+                        <div>
+                            <span class="panel-subtitle">
+                                MACHINE LEARNING
+                            </span>
+
+                            <h3>Predicción de demanda</h3>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+<p class="dashboard-producto"
+   id="nombreProductoPrediccion">
+    Hamburguesa Clásica
+</p>
+
+<div class="dashboard-resultado"
+     id="resultadoDemanda">
+    {{ demanda_estimada }}
+</div>
+
+
+                <p class="dashboard-unidad">
+                    unidades estimadas
+                </p>
+
+                <div class="dashboard-detalles">
+
+                    <div class="dashboard-detalle">
+                        <span>Fecha del ejemplo</span>
+                        <strong id="detalleFecha">01/10/2026</strong>
+                    </div>
+
+
+<div class="dashboard-detalle">
+    <span>Ventas del día anterior</span>
+    <strong id="detalleVentasAyer">15 unidades</strong>
+</div>
+
+<div class="dashboard-detalle">
+    <span>Ventas hace 7 días</span>
+    <strong id="detalleVentasSemana">13 unidades</strong>
+</div>
+
+<div class="dashboard-detalle">
+    <span>Promedio de 7 días</span>
+    <strong id="detallePromedio">16.5 unidades</strong>
+</div>
+
+
+                    <div class="dashboard-detalle">
+                        <span>Modelo</span>
+                        <strong>Random Forest</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ======================================
+             INFORMACIÓN Y MÉTRICAS
+             ====================================== -->
+
+        <section class="dashboard-columnas-inferior">
+
+            <!-- INFORMACIÓN -->
+
+            <div class="card-panel">
+
+                <div class="card-panel-header">
+
+                    <div class="panel-title-group">
+
+                        <div class="panel-icon-badge">
+                            <i class="bi bi-cpu"></i>
+                        </div>
+
+                        <div>
+                            <span class="panel-subtitle">
+                                MODELO PREDICTIVO
+                            </span>
+
+                            <h3>Información del modelo</h3>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <p class="dashboard-descripcion">
+                    El sistema utiliza el algoritmo Random Forest
+                    para estimar la demanda de productos de comida
+                    rápida. El modelo considera el producto,
+                    el día de la semana, el día del mes,
+                    las ventas del día anterior, las ventas
+                    de hace siete días y el promedio de ventas
+                    de los últimos siete días.
+                </p>
+
+                <div class="dashboard-aviso">
+
+                    <i class="bi bi-info-circle"></i>
+
+                    <span>
+                        El modelo fue entrenado con datos sintéticos
+                        para fines académicos. Las predicciones
+                        son experimentales y todavía no han sido
+                        validadas con ventas reales del negocio.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- MÉTRICAS -->
+
+            <div class="card-panel">
+
+                <div class="card-panel-header">
+
+                    <div class="panel-title-group">
+
+                        <div class="panel-icon-badge amarillo">
+                            <i class="bi bi-clipboard-data"></i>
+                        </div>
+
+                        <div>
+                            <span class="panel-subtitle">
+                                EVALUACIÓN
+                            </span>
+
+                            <h3>Rendimiento del modelo</h3>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <table class="dashboard-metricas">
+
+                    <tbody>
+
+                        <tr>
+                            <td>Algoritmo</td>
+                            <td>Random Forest</td>
+                        </tr>
+
+                        <tr>
+                            <td>MAE</td>
+                            <td>3.709</td>
+                        </tr>
+
+                        <tr>
+                            <td>RMSE</td>
+                            <td>4.698</td>
+                        </tr>
+
+                        <tr>
+                            <td>R²</td>
+                            <td>0.493</td>
+                        </tr>
+
+                        <tr>
+                            <td>Tipo de predicción</td>
+                            <td>Regresión</td>
+                        </tr>
+
+                        <tr>
+                            <td>Datos de entrenamiento</td>
+                            <td>Sintéticos</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==========================================
+         PIE DE PÁGINA
+         ========================================== -->
+
+    <footer class="modulo-footer">
+
+        <span>
+            Sistema de Gestión de Entregas
+        </span>
+
+        <div class="footer-operacion">
+            <i class="bi bi-graph-up-arrow"></i>
+            Análisis predictivo
+        </div>
+
+    </footer>
+
+
+    <!-- ==========================================
+         GRÁFICO DE DEMANDA
+         ========================================== -->
+
+    
+<script>
+
+    // ==========================================
+    // GRÁFICO COMPARATIVO DE DEMANDA
+    // ==========================================
+
+    const contexto = document.getElementById("graficoDemanda");
+
+    const graficoDemanda = new Chart(contexto, {
+
+        type: "bar",
+
+        data: {
+
+            labels: [
+                "Ventas ayer",
+                "Ventas hace 7 días",
+                "Promedio 7 días",
+                "Demanda estimada"
+            ],
+
+            datasets: [{
+
+                label: "Unidades",
+
+                data: [
+                    15,
+                    13,
+                    16.5,
+                    {{ demanda_estimada | tojson }}
+                ],
+
+                backgroundColor: [
+                    "#e8b5ad",
+                    "#e8b5ad",
+                    "#f1cf78",
+                    "#a63d32"
+                ],
+
+                borderRadius: 8,
+
+                maxBarThickness: 65
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y + " unidades";
+                        }
+                    }
+                }
+
+            },
+
+            scales: {
+
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
+
+                y: {
+                    beginAtZero: true,
+
+                    grid: {
+                        color: "#eeeae4"
+                    }
+                }
+
+            }
+
+        }
+
+    });
+
+</script>
+
+
+<script>
+
+    // ==========================================
+    // CONSULTAR PREDICCIÓN DE DEMANDA
+    // ==========================================
+
+    const botonPredecir = document.getElementById("botonPredecir");
+    const selectorProducto = document.getElementById("productoDashboard");
+
+    botonPredecir.addEventListener("click", async function () {
+
+        const idProducto = selectorProducto.value;
+
+        
+// Obtener la fecha seleccionada
+
+const fechaSeleccionada =
+    document.getElementById("fechaPrediccion").value;
+
+if (!fechaSeleccionada) {
+    alert("Seleccione una fecha.");
+    return;
+}
+
+const partesFecha = fechaSeleccionada.split("-");
+
+const fecha = new Date(
+    Number(partesFecha[0]),
+    Number(partesFecha[1]) - 1,
+    Number(partesFecha[2])
+);
+
+// Lunes = 0, martes = 1, ..., domingo = 6
+
+const diaSemana = (fecha.getDay() + 6) % 7;
+
+const diaMes = fecha.getDate();
+
+
+        if (!idProducto) {
+            alert("Seleccione un producto.");
+            return;
+        }
+
+        botonPredecir.disabled = true;
+        botonPredecir.innerHTML = "Calculando...";
+
+        try {
+
+            const respuesta = await fetch("/predecir-demanda", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                
+body: JSON.stringify({
+
+    id_producto: Number(idProducto),
+
+    dia_semana: diaSemana,
+    dia_mes: diaMes,
+
+    ventas_ayer: Number(
+        document.getElementById("ventasAyer").value
+    ),
+
+    ventas_hace_7_dias: Number(
+        document.getElementById("ventasSemana").value
+    ),
+
+    promedio_7_dias: Number(
+        document.getElementById("promedioVentas").value
+    )
+
+})
+
+
+            });
+
+            const resultado = await respuesta.json();
+
+            if (!respuesta.ok) {
+                throw new Error(
+                    resultado.error || "No se pudo calcular la demanda."
+                );
+            }
+
+            // Mostrar la predicción obtenida
+            document.getElementById("resultadoDemanda").textContent =
+                resultado.demanda_estimada;
+
+            // Actualizar el nombre del producto
+            document.getElementById("nombreProductoPrediccion").textContent =
+                selectorProducto.options[selectorProducto.selectedIndex].text;
+
+                
+// Actualizar los datos utilizados en la predicción
+
+document.getElementById("detalleVentasAyer").textContent =
+    document.getElementById("ventasAyer").value + " unidades";
+
+document.getElementById("detalleVentasSemana").textContent =
+    document.getElementById("ventasSemana").value + " unidades";
+
+document.getElementById("detallePromedio").textContent =
+    document.getElementById("promedioVentas").value + " unidades";
+
+
+// ==========================================
+// ACTUALIZAR GRÁFICO CON LA PREDICCIÓN
+// ==========================================
+
+graficoDemanda.data.datasets[0].data = [
+
+    Number(document.getElementById("ventasAyer").value),
+
+    Number(document.getElementById("ventasSemana").value),
+
+    Number(document.getElementById("promedioVentas").value),
+
+    Number(resultado.demanda_estimada)
+
+];
+
+graficoDemanda.update();
+
+document.getElementById("detalleFecha").textContent =
+    fechaSeleccionada.split("-").reverse().join("/");
+
+// ==========================================
+// ACTUALIZAR INDICADOR PRINCIPAL
+// ==========================================
+
+document.getElementById("indicadorDemanda").textContent =
+    resultado.demanda_estimada;
+
+document.getElementById("indicadorProducto").textContent =
+    selectorProducto.options[selectorProducto.selectedIndex].text;
+
+        } catch (error) {
+
+            alert("Error: " + error.message);
+
+        } finally {
+
+            botonPredecir.disabled = false;
+
+            botonPredecir.innerHTML =
+                '<i class="bi bi-graph-up-arrow"></i> Consultar demanda';
+
+        }
+
+    });
+
+</script>
+<!-- Chatbot flotante -->
+{% include 'componentes/chatbot.html' %}
+
+<!-- Funciones del chatbot -->
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+</body>
+</html>
