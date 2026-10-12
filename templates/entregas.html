@@ -98,7 +98,8 @@
             v: "weekly"
         });
     </script>
-
+<!-- Estilos del chatbot flotante -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
 </head>
 
 
@@ -594,6 +595,45 @@
                  ================================================= -->
 
             <div class="tabla-contenedor">
+                
+
+<!-- BUSCADOR Y FILTROS DE ENTREGAS -->
+
+<div class="filtros-entregas">
+
+    <div class="campo-busqueda-entrega">
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+        <input
+            type="text"
+            id="buscarEntrega"
+            placeholder="Buscar por ID, pedido o dirección..."
+            autocomplete="off"
+        >
+    </div>
+
+    <div class="campo-estado-entrega">
+        <i class="fa-solid fa-filter"></i>
+
+        <select id="filtrarEstadoEntrega">
+            <option value="">Todos los estados</option>
+            <option value="Pendiente">Pendiente</option>
+            <option value="En camino">En camino</option>
+            <option value="Entregado">Entregado</option>
+        </select>
+    </div>
+
+    <button
+        type="button"
+        class="boton-restablecer-entrega"
+        onclick="restablecerEntregas()"
+    >
+        <i class="fa-solid fa-rotate-right"></i>
+        Restablecer
+    </button>
+
+</div>
+
 
                 <table>
 
@@ -627,6 +667,37 @@
                     </tbody>
 
                 </table>
+                
+<!-- ========================================== -->
+<!-- PAGINACIÓN DE ENTREGAS -->
+<!-- ========================================== -->
+
+<div class="paginacion-entregas">
+
+    <button
+        type="button"
+        id="btnAnteriorEntrega"
+        onclick="cambiarPaginaEntrega(-1)"
+    >
+        <i class="fa-solid fa-chevron-left"></i>
+        Anterior
+    </button>
+
+    <span id="informacionPaginaEntrega">
+        Página 1 de 1
+    </span>
+
+    <button
+        type="button"
+        id="btnSiguienteEntrega"
+        onclick="cambiarPaginaEntrega(1)"
+    >
+        Siguiente
+        <i class="fa-solid fa-chevron-right"></i>
+    </button>
+
+</div>
+
 
             </div>
 
@@ -755,7 +826,11 @@
         src="{{ url_for('static', filename='js/entregas.js') }}"
     ></script>
 
+<!-- Chatbot flotante -->
+{% include 'componentes/chatbot.html' %}
 
+<!-- Funciones del chatbot -->
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
 </body>
 
 </html>
